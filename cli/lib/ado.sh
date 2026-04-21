@@ -256,49 +256,49 @@ _ado_collect_fields() {
   case "$wi_type" in
     Feature)
       # Feature mandatory fields
-      _ado_collect_field_value "$collected_fields_var" "Jio.Common.AnalyticsFunnel" \
+      _ado_collect_field_value "$collected_fields_var" "Custom.AnalyticsFunnel" \
         "Analytics Funnel" "Yes;No" "$ADO_FEATURE_ANALYTICS_FUNNEL" || return 1
-      _ado_collect_field_value "$collected_fields_var" "Jio.Common.FirebaseConfigRequired" \
+      _ado_collect_field_value "$collected_fields_var" "Custom.FirebaseConfigRequired" \
         "Firebase Config Required" "Yes;No" "$ADO_FEATURE_FIREBASE_CONFIG_REQUIRED" || return 1
-      _ado_collect_field_value "$collected_fields_var" "Jio.Common.SuccessCriteria" \
+      _ado_collect_field_value "$collected_fields_var" "Custom.SuccessCriteria" \
         "Success Criteria" "" "$ADO_FEATURE_SUCCESS_CRITERIA" || return 1
       _ado_collect_field_value "$collected_fields_var" "System.AreaPath" \
-        "Area Path" "" "${ADO_WI_AREA_PATH:-JioAIphotos\\POD 1}" || return 1
+        "Area Path" "" "${ADO_WI_AREA_PATH:-YourAzureProject\\POD 1}" || return 1
       _ado_collect_field_value "$collected_fields_var" "System.IterationPath" \
-        "Iteration Path" "" "${ADO_WI_ITERATION_PATH:-JioAIphotos\\Sprint 1}" || return 1
+        "Iteration Path" "" "${ADO_WI_ITERATION_PATH:-YourAzureProject\\Sprint 1}" || return 1
       ;;
     "User Story")
       # User Story mandatory fields (see templates/ado-field-registry.sh)
       _ado_collect_field_value "$collected_fields_var" "System.AreaPath" \
-        "Area Path" "" "${ADO_WI_AREA_PATH:-JioAIphotos\\POD 1}" || return 1
+        "Area Path" "" "${ADO_WI_AREA_PATH:-YourAzureProject\\POD 1}" || return 1
       _ado_collect_field_value "$collected_fields_var" "System.IterationPath" \
-        "Iteration Path" "" "${ADO_WI_ITERATION_PATH:-JioAIphotos\\Sprint 1}" || return 1
+        "Iteration Path" "" "${ADO_WI_ITERATION_PATH:-YourAzureProject\\Sprint 1}" || return 1
       _ado_collect_field_value "$collected_fields_var" "System.AssignedTo" \
         "Assigned To" "" "$(_ado_assignee_patch_value "${ADO_USER_EMAIL:-}")" || return 1
-      _ado_collect_field_value "$collected_fields_var" "Jio.Common.Dependency" \
+      _ado_collect_field_value "$collected_fields_var" "Custom.Dependency" \
         "Dependency" "Android;Server;Web" "${ADO_WI_DEPENDENCY:-Android}" || return 1
-      _ado_collect_field_value "$collected_fields_var" "Jio.Common.UserstorySource" \
+      _ado_collect_field_value "$collected_fields_var" "Custom.UserstorySource" \
         "Userstory Source" "" "${ADO_WI_USERSTORY_SOURCE:-Product Backlog}" || return 1
-      _ado_collect_field_value "$collected_fields_var" "Jio.Common.PlatformJioCloud" \
-        "Platform JioCloud" "Android;Database;Devops;Server;Web" "${ADO_WI_PLATFORM_JIOCLOUD:-Android}" || return 1
+      _ado_collect_field_value "$collected_fields_var" "Custom.ApplicationPlatform" \
+        "Application platform" "Android;Database;Devops;Server;Web" "${ADO_WI_PLATFORM_JIOCLOUD:-Android}" || return 1
       ;;
     Task)
       # Task mandatory fields (process may require Assigned To + Platform — see ado-field-registry.sh)
       _ado_collect_field_value "$collected_fields_var" "System.AreaPath" \
-        "Area Path" "" "${ADO_WI_AREA_PATH:-JioAIphotos\\POD 1}" || return 1
+        "Area Path" "" "${ADO_WI_AREA_PATH:-YourAzureProject\\POD 1}" || return 1
       _ado_collect_field_value "$collected_fields_var" "System.IterationPath" \
-        "Iteration Path" "" "${ADO_WI_ITERATION_PATH:-JioAIphotos\\Sprint 1}" || return 1
+        "Iteration Path" "" "${ADO_WI_ITERATION_PATH:-YourAzureProject\\Sprint 1}" || return 1
       _ado_collect_field_value "$collected_fields_var" "System.AssignedTo" \
         "Assigned To" "" "$(_ado_assignee_patch_value "${ADO_USER_EMAIL:-}")" || return 1
-      _ado_collect_field_value "$collected_fields_var" "Jio.Common.PlatformJioCloud" \
-        "Platform JioCloud" "Android;Database;Devops;Server;Web" "${ADO_WI_PLATFORM_JIOCLOUD:-Android}" || return 1
+      _ado_collect_field_value "$collected_fields_var" "Custom.ApplicationPlatform" \
+        "Application platform" "Android;Database;Devops;Server;Web" "${ADO_WI_PLATFORM_JIOCLOUD:-Android}" || return 1
       ;;
     Bug)
       # Bug mandatory fields
       _ado_collect_field_value "$collected_fields_var" "System.AreaPath" \
-        "Area Path" "" "${ADO_WI_AREA_PATH:-JioAIphotos\\POD 1}" || return 1
+        "Area Path" "" "${ADO_WI_AREA_PATH:-YourAzureProject\\POD 1}" || return 1
       _ado_collect_field_value "$collected_fields_var" "System.IterationPath" \
-        "Iteration Path" "" "${ADO_WI_ITERATION_PATH:-JioAIphotos\\Sprint 1}" || return 1
+        "Iteration Path" "" "${ADO_WI_ITERATION_PATH:-YourAzureProject\\Sprint 1}" || return 1
       ;;
   esac
 
