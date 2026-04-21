@@ -23,11 +23,11 @@ sdlc doctor
 ### Multi-repo workspaces (10+ microservices under one parent)
 
 If you're a module owner with many repos under a parent folder
-(e.g. `jioaiphotos/{TejAuthService,tejpublicservices,tejsecurity}`), use
+(e.g. `example-app/{TejAuthService,tejpublicservices,tejsecurity}`), use
 **workspace init** instead of running `sdlc setup` once per repo:
 
 ```bash
-cd /path/to/parent-folder            # e.g., jioaiphotos/
+cd /path/to/parent-folder            # e.g., example-app/
 sdlc workspace init --dry-run        # preview what will be set up
 sdlc workspace init                  # set up every child repo once
 
@@ -101,7 +101,7 @@ Automatically installed as part of `./setup.sh`:
 ### Step 1: Clone the Repository
 
 ```bash
-git clone https://github.com/jiocloud/ai-sdlc-platform.git
+git clone https://github.com/example-org/ai-sdlc-platform.git
 cd ai-sdlc-platform
 ```
 

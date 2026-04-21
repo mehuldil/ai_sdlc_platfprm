@@ -151,7 +151,15 @@ sdlc module validate                  # check for breaking changes before merge
 
 ### Git hooks (quality at commit-time)
 
-20 hooks covering: secrets detection, commit message format, documentation sync, token budget checks, module contract validation. Issues caught at commit — not at PR review.
+22 hooks covering: secrets detection, commit message format, documentation sync, token budget checks, module contract validation, **semantic memory sync**, and **pre-merge test enforcement**. Issues caught at commit — not at PR review.
+
+**Semantic Memory Hooks:**
+- `semantic-memory-pre-commit.sh` — Exports active semantic memory to JSONL for team sync
+- `semantic-memory-post-merge.sh` — Imports team semantic memory after pull/merge
+
+**Pre-merge Test Enforcement:**
+- `pre-merge-test-enforcement.md` — Policy requiring tests to pass before merge (with structured bypass via `sdlc skip-tests`)
+- `test-bypass-escalation.sh` — Escalation workflow for test bypass approval
 
 ### Advisory gates (inform, don't block)
 
@@ -172,11 +180,12 @@ Roles → Agents → Skills → Stages
 ├── stages/          # 01-requirement-intake → 15-summary-close
 ├── stacks/          # Stack conventions: Java, Kotlin/Android, Swift/iOS, React Native, JMeter, Figma
 ├── roles/           # 8 role definitions with token budgets
-├── cli/             # sdlc CLI (Bash + completions)
-├── hooks/           # 20 git hooks
+├── cli/             # sdlc CLI (Bash + completions) + utilities (ado-html-to-validator-md.js)
+├── hooks/           # 22 git hooks + semantic memory sync
 ├── templates/       # PRD, 4-tier stories, design, ADR, test plans
 ├── workflows/       # Workflow YAML (full-sdlc, quick-fix, perf-cycle, …)
-├── orchestrator/    # Smart routing and gate enforcement
+├── orchestrator/    # Smart routing, gate enforcement, ADO observer (2-way sync)
+├── memory/          # Semantic memory system (SQLite + JSONL team sync)
 └── User_Manual/     # Markdown manual + searchable manual.html (see build-manual-html.mjs ORDER)
 ```
 
@@ -221,6 +230,8 @@ Roles → Agents → Skills → Stages
 | End-to-end happy path | [Happy Path End to End](User_Manual/Happy_Path_End_to_End.md) |
 | Agents, skills, rules inventory | [Agents Skills Rules](User_Manual/Agents_Skills_Rules.md) |
 | ADO / MCP integration | [ADO MCP Integration](User_Manual/ADO_MCP_Integration.md) |
+| Semantic Memory System | [Persistent Memory](User_Manual/Persistent_Memory.md) |
+| Pre-merge Test Enforcement | [Pre-Merge Test Enforcement](rules/pre-merge-test-enforcement.md) |
 | Cursor / Claude / CLI | [CANONICAL_REPO_AND_INTERFACES](User_Manual/CANONICAL_REPO_AND_INTERFACES.md) |
 | Architecture deep-dive | [Architecture](User_Manual/Architecture.md) |
 | Troubleshooting | [FAQ](User_Manual/FAQ.md) |

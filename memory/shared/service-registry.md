@@ -11,7 +11,7 @@
 | Field | Value |
 |-------|-------|
 | **Owner** | Backend Team (John Doe) |
-| **Repository** | github.com/jiocloud/auth-service |
+| **Repository** | github.com/example-org/auth-service |
 | **Status** | EXISTING (Production) |
 | **Language** | Java 17 |
 | **Last ADR** | ADR-005 (OAuth2 Integration) |
@@ -27,7 +27,7 @@
 | Field | Value |
 |-------|-------|
 | **Owner** | Backend Team (Jane Smith) |
-| **Repository** | github.com/jiocloud/profile-service |
+| **Repository** | github.com/example-org/profile-service |
 | **Status** | EXISTING (Production) |
 | **Language** | Java 17 |
 | **Last ADR** | ADR-008 (Profile Caching Strategy) |
@@ -43,7 +43,7 @@
 | Field | Value |
 |-------|-------|
 | **Owner** | Backend Team (Bob Johnson) |
-| **Repository** | github.com/jiocloud/notification-service |
+| **Repository** | github.com/example-org/notification-service |
 | **Status** | EXISTING (Production) |
 | **Language** | Java 17 |
 | **Last ADR** | ADR-012 (Event-Driven Notifications) |
@@ -59,7 +59,7 @@
 | Field | Value |
 |-------|-------|
 | **Owner** | Backend Team (Alice Wong) |
-| **Repository** | github.com/jiocloud/search-service |
+| **Repository** | github.com/example-org/search-service |
 | **Status** | EXISTING (Production) |
 | **Language** | Java 17 |
 | **Last ADR** | ADR-015 (Elasticsearch Integration) |
@@ -75,7 +75,7 @@
 | Field | Value |
 |-------|-------|
 | **Owner** | Frontend Team (Carol Davis) |
-| **Repository** | github.com/jiocloud/web-frontend |
+| **Repository** | github.com/example-org/web-frontend |
 | **Status** | EXISTING (Production) |
 | **Language** | TypeScript 5 / React 18 |
 | **Last ADR** | ADR-020 (Component Architecture) |
@@ -91,7 +91,7 @@
 | Field | Value |
 |-------|-------|
 | **Owner** | Mobile Team (Derek Brown) |
-| **Repository** | github.com/jiocloud/mobile-app |
+| **Repository** | github.com/example-org/mobile-app |
 | **Status** | EXISTING (Production) |
 | **Language** | TypeScript / React Native |
 | **Last ADR** | ADR-022 (Native Module Bridge) |
@@ -109,7 +109,7 @@
 | Field | Value |
 |-------|-------|
 | **Owner** | TBD |
-| **Repository** | github.com/jiocloud/payment-service |
+| **Repository** | github.com/example-org/payment-service |
 | **Status** | NEW (Planned Sprint 26) |
 | **Language** | Java 17 (planned) |
 | **Planned ADR** | ADR-025 (Stripe Integration) |

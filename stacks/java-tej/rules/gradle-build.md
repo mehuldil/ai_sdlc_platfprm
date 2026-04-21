@@ -7,7 +7,7 @@ All projects use `build.gradle.kts` (Kotlin DSL, not Groovy)
 ```kotlin
 plugins {
   java
-  id("com.jio.cloud.conventions") version "1.0"
+  id("com.example.app.conventions") version "1.0"
 }
 
 group = "com.jio.cloud"

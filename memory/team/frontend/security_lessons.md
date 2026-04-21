@@ -41,7 +41,7 @@
 ### Headers & CSP
 ```
 Content-Security-Policy: default-src 'self'; script-src 'self'; 
-  img-src 'self' data: https://cdn.jiocloud.io;
+  img-src 'self' data: https://cdn.example.invalid;
 X-Frame-Options: SAMEORIGIN
 X-Content-Type-Options: nosniff
 ```

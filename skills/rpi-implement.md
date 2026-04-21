@@ -206,15 +206,15 @@ After implementation, create a summary report (example):
 
 ## Test Results
 ```
-[INFO] Building jioaiphotos-auth 1.0.0
+[INFO] Building example-app-auth 1.0.0
 [INFO]
-[INFO] --- maven-surefire-plugin:2.22.2:test (default-test) @ jioaiphotos-auth ---
+[INFO] --- maven-surefire-plugin:2.22.2:test (default-test) @ example-app-auth ---
 [INFO] Running com.jio.auth.AuthServiceTest
 [INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.345 s
 [INFO] Running com.jio.auth.UserMergeTest
 [INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.567 s
 [INFO]
-[INFO] --- jacoco-maven-plugin:0.8.7:report (report) @ jioaiphotos-auth ---
+[INFO] --- jacoco-maven-plugin:0.8.7:report (report) @ example-app-auth ---
 [INFO] Skipping JaCoCo execution because provider.tx_ has file(s) that depend on this project.
 [INFO]
 [INFO] BUILD SUCCESS

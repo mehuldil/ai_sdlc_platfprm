@@ -2,7 +2,7 @@
 
 ## Single source of truth (natural language + SDLC)
 
-**Canonical repository:** `ai-sdlc-platform/` in this workspace — all agents, skills, rules, orchestrators, CLI, hooks, and the IDE plugin under `plugins/ide-plugin/` live here.
+**Repository root:** `ai_sdlc_platform/` in this workspace — all agents, skills, rules, orchestrators, CLI, hooks, and the IDE plugin under `plugins/ide-plugin/` live here.
 
 - **Do not** maintain a second copy of the same orchestrators or skills in another repo. If you have `ai-sdlc-ide-plugin` (or similar) elsewhere, treat it as **legacy** and **migrate** consumers to:
   - **Submodule**, **npm/git dependency**, or **documented path** to this repo; or

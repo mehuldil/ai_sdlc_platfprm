@@ -4,7 +4,7 @@
 - Classes: `PascalCase`
 - Methods: `camelCase`
 - Constants: `UPPER_SNAKE_CASE`
-- Packages: `com.jio.cloud.{service}.{layer}`
+- Packages: `com.example.app.{service}.{layer}`
 
 ## Structure & Formatting
 - **Line length**: Max 120 characters

@@ -17,7 +17,7 @@
 ### Local Setup
 ```bash
 # Clone repo
-git clone https://github.com/jiocloud/auth-service.git
+git clone https://github.com/example-org/auth-service.git
 cd auth-service
 
 # Install dependencies
@@ -77,13 +77,13 @@ docker-compose up -d
 - Trigger: Merge to develop
 - Deployment: Automatic (no manual approval)
 - Environment: AWS EKS (staging namespace)
-- URL: https://staging-api.jiocloud.io
+- URL: https://staging-api.example.invalid
 
 ### Production
 - Trigger: Manual (release manager)
 - Deployment: Blue-green (zero downtime)
 - Environment: AWS EKS (production namespace)
-- URL: https://api.jiocloud.io
+- URL: https://api.example.invalid
 - Rollback: 1-click (previous version)
 
 ---

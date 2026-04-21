@@ -94,7 +94,7 @@ sdlc module update                # Refresh KB after commit
 
 ### Auto-sync (module KB + semantic memory)
 
-With hooks from **`setup.sh`** / **`sdlc setup`**, you normally **do not** run manual `module update` / memory export:
+With hooks from **`setup.sh`** / **`sdlc setup``, you normally **do not** run manual `module update` / memory export:
 
 | When | What runs |
 |------|-----------|
@@ -102,6 +102,12 @@ With hooks from **`setup.sh`** / **`sdlc setup`**, you normally **do not** run m
 | **post-merge** | Same module refresh + **import** JSONL into local **SQLite** (so `git pull` + merge updates your DB) |
 | **post-checkout** | Same as post-merge when you **switch branches** (so local state tracks the branch) |
 | **post-commit** | Async backup export (e.g. if **`--no-verify`** skipped pre-commit) |
+
+**Semantic Memory Hooks:**
+- `hooks/semantic-memory-pre-commit.sh` — Exports semantic memory to JSONL before commit
+- `hooks/semantic-memory-post-merge.sh` — Imports team JSONL after pull/merge
+
+These hooks ensure team memory stays synchronized automatically via git.
 
 - **Git-tracked bus for the team:** `.sdlc/module/**` and `semantic-memory-team.jsonl` (SQLite stays machine-local and gitignored).
 - **Disable:** `SDL_AUTO_SYNC=0`, or `SDL_AUTO_SYNC_MODULE=0` / `SDL_AUTO_SYNC_SEMANTIC=0`.

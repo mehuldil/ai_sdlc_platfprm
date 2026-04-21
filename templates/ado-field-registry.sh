@@ -31,17 +31,17 @@ declare -gA ADO_FIELD_REGISTRY=(
   [Feature.Analytics]="Analytics Funnel|Custom.AnalyticsFunnel|Yes;No||ADO_FEATURE_ANALYTICS_FUNNEL"
   [Feature.Firebase]="Firebase Config Required|Custom.FirebaseConfigRequired|Yes;No||ADO_FEATURE_FIREBASE_CONFIG_REQUIRED"
   [Feature.Success]="Success Criteria|Custom.SuccessCriteria|||ADO_FEATURE_SUCCESS_CRITERIA"
-  [Feature.Platform]="Application platform|Custom.ApplicationPlatform|Android;Database;Devops;Server;Web|Android;Database;Devops;Server;Web|ADO_WI_PLATFORM_JIOCLOUD"
+  [Feature.Platform]="Application platform|Custom.ApplicationPlatform|Android;Database;Devops;Server;Web|Android;Database;Devops;Server;Web|ADO_WI_PLATFORM_example-org"
   [Feature.AssignedTo]="Assigned To|System.AssignedTo|||ADO_USER_EMAIL"
 
   # User Story-specific fields
   [UserStory.Dependency]="Dependency|Custom.Dependency|Android;Server;Web|Android;Server;Web|ADO_WI_DEPENDENCY"
   [UserStory.Source]="Userstory Source|Custom.UserstorySource||Product Backlog|ADO_WI_USERSTORY_SOURCE"
-  [UserStory.Platform]="Application platform|Custom.ApplicationPlatform|Android;Database;Devops;Server;Web|Android;Database;Devops;Server;Web|ADO_WI_PLATFORM_JIOCLOUD"
+  [UserStory.Platform]="Application platform|Custom.ApplicationPlatform|Android;Database;Devops;Server;Web|Android;Database;Devops;Server;Web|ADO_WI_PLATFORM_example-org"
   [UserStory.AssignedTo]="Assigned To|System.AssignedTo|||ADO_USER_EMAIL"
 
   # Task-specific fields
-  [Task.Platform]="Application platform|Custom.ApplicationPlatform|Android;Database;Devops;Server;Web|Android;Database;Devops;Server;Web|ADO_WI_PLATFORM_JIOCLOUD"
+  [Task.Platform]="Application platform|Custom.ApplicationPlatform|Android;Database;Devops;Server;Web|Android;Database;Devops;Server;Web|ADO_WI_PLATFORM_example-org"
 
   # Bug-specific fields
   [Bug.Priority]="Priority|System.Priority|1;2;3;4|3|ADO_BUG_PRIORITY"
@@ -154,7 +154,7 @@ _ado_get_mandatory_fields() {
 # ADO_FEATURE_ANALYTICS_FUNNEL            - Feature: Analytics funnel default
 # ADO_FEATURE_FIREBASE_CONFIG_REQUIRED    - Feature: Firebase config default
 # ADO_FEATURE_SUCCESS_CRITERIA            - Feature: Success criteria default
-# ADO_WI_PLATFORM_JIOCLOUD                - Work item: Platform targets default
+# ADO_WI_PLATFORM_example-org                - Work item: Platform targets default
 # ADO_WI_DEPENDENCY                       - User Story: Dependency default
 # ADO_WI_USERSTORY_SOURCE                 - User Story: Source default
 # ADO_WI_AREA_PATH                        - Work item: Area path default

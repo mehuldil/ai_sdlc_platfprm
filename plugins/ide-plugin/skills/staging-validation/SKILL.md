@@ -75,8 +75,8 @@ User: [3]
 👤 SIGN-OFF REQUESTS:
 
 Sending sign-off requests to:
-  • QA Lead: Eve@jiocloud.com
-  • Product Manager: Raj@jiocloud.com
+  • QA Lead: Eve@example-org.com
+  • Product Manager: Raj@example-org.com
 
 Waiting for responses...
 

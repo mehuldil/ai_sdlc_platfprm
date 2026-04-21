@@ -1,39 +1,52 @@
-# Public mirror sync (Azure → GitHub)
+# Publishing a public distribution tree
 
-The **canonical** platform lives on **Azure DevOps** (`AI-sdlc-platform`). The **GitHub** repo (`ai_sdlc_platform`) is a **public mirror**: same tree, without internal organization clone URLs and with neutral doc wording where needed.
+Use this flow when you maintain a **full** platform checkout and want to prepare a **separate** directory or clone for **public** sharing (neutral clone URLs and curated doc overlays).
+
+This is a deliberate **publish** step: review the diff, regenerate the offline manual, then commit and push from the public checkout.
 
 ## Workflow
 
-1. Commit and push changes on **Azure** first.
-2. Clone or update your local **public mirror** checkout (sibling folder is easiest).
-3. From the **Azure** repo root, run:
+1. Commit your changes in the **full** repository (your usual remote and branch).
+2. Clone or update the **public** checkout (a sibling folder is convenient).
+3. From the **full** repo root, run **one** of:
+
+**Linux / macOS / Git Bash with `rsync`:**
 
 ```bash
-bash scripts/mirror-public/sync-to-public-mirror.sh /path/to/AI_SDLC_Platform
+bash scripts/mirror-public/sync-to-public-mirror.sh /path/to/public-checkout
 ```
 
-Default destination if you omit the argument: `../AI_SDLC_Platform` (relative to the Azure repo root).
+Default destination if you omit the argument: `../AI_SDLC_Platform` (relative to the full repo root).
 
-4. Review `git diff` in the mirror, then commit and push **GitHub**.
+**Windows (no `rsync` on PATH):**
 
-5. Regenerate the offline manual in the mirror (embeds doc text):
+```powershell
+powershell -File scripts/mirror-public/sync-to-public-mirror.ps1 -Dest C:\path\to\public-checkout
+bash scripts/mirror-public/finish-public-mirror.sh /c/path/to/public-checkout
+```
+
+(`finish-public-mirror.sh` runs **neutralize** + **overlays** + **neutralize** again; requires **Python 3**.)
+
+4. In the public checkout, review `git diff`, then regenerate the offline manual (it embeds doc text):
 
 ```bash
-cd /path/to/AI_SDLC_Platform
+cd /path/to/public-checkout
 node User_Manual/build-manual-html.mjs
 ```
 
-## What the script does
+5. Commit and push from the **public** checkout.
 
-1. **`rsync`** from the Azure working tree into the mirror directory (excludes `.git`, secrets, etc. — see `rsync-excludes.txt`).
-2. **Neutralizes** common internal URLs in `*.md` and `User_Manual/*.html` (not the generated JSON blob in `manual.html` — regenerate that with Node).
-3. **Overlays** curated files from `scripts/mirror-public/overlays/` (GitHub clone wording, neutral `User_Manual` hub, etc.). Edit those overlays in the **Azure** repo when public wording should change.
+## What the scripts do
+
+1. **Copy** from the full working tree into the public directory (`rsync` or `robocopy`; excludes `.git`, IDE-generated trees, team `stories/`, machine `.sdlc/`, secrets, etc. — see `rsync-excludes.txt`).
+2. **Neutralize** internal names and clone URLs via `neutralize_public_mirror.py` (common text extensions plus `.env` examples).
+3. **Overlay** curated files from `scripts/mirror-public/overlays/` (e.g. hub pages and metadata). Edit overlays in the **full** repo when public-facing wording should differ.
 
 ## Environment overrides
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `PUBLIC_MIRROR_GITHUB_CLONE` | `https://github.com/YOUR_GITHUB_USER/ai_sdlc_platform.git` | Replacement for the internal Azure HTTPS clone URL in bulk sed |
+| `PUBLIC_MIRROR_GITHUB_CLONE` | `https://github.com/YOUR_GITHUB_USER/ai_sdlc_platform.git` | Replacement for internal HTTPS clone URLs in bulk substitution |
 | `PUBLIC_MIRROR_DRY_RUN` | empty | Set to `1` to pass `--dry-run` to rsync only |
 
 ## Safety
@@ -41,8 +54,17 @@ node User_Manual/build-manual-html.mjs
 - Run from a **clean** `git status` on both sides when possible.
 - Use `PUBLIC_MIRROR_DRY_RUN=1 bash scripts/mirror-public/sync-to-public-mirror.sh …` to preview rsync.
 
-## Do not edit the mirror as the source of truth
+## Source of truth
 
-- **Always commit and push on Azure DevOps first.** The public GitHub tree is a **mirror**, not a second product.
-- If you change files **only** in the mirror, they will be **overwritten** on the next `sync-to-public-mirror.sh` from Azure (or drift silently until someone notices).
-- For doc wording that should differ on GitHub only, add or edit files under **`scripts/mirror-public/overlays/`** in the **Azure** repo, then re-sync.
+- Treat the **full** repository as the place where platform behavior is authored.
+- If you edit files **only** in the public checkout, they will be **overwritten** on the next publish run (or drift until someone notices).
+- For wording that should differ only in the public tree, add or edit files under **`scripts/mirror-public/overlays/`** in the **full** repo, then publish again.
+
+## CI parity
+
+After publish, the public repo’s GitHub Actions workflow **Publish tree verify** runs:
+
+- `node User_Manual/build-manual-html.mjs --check`
+- `bash scripts/mirror-public/verify-public-no-vendor.sh`
+
+Run the same commands locally before pushing when you change docs or overlays.

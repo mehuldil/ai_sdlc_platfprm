@@ -20,16 +20,16 @@ Nothing replaces your judgement or your release process — the platform **guide
 | **[manual.html](manual.html)** in a browser | **Offline** — one file, sidebar, **search** (try several words; all must appear). Press **Ctrl+K** / **Cmd+K** for quick search. |
 | Stay in **Markdown** in the repo | Developers editing docs — same content as the HTML file. |
 
-## Clone the platform (canonical)
-
-**Azure DevOps** — project **YourAzureProject**, repo **AI-sdlc-platform**:
+## Get the platform source
 
 ```bash
 git clone https://github.com/YOUR_GITHUB_USER/ai_sdlc_platform.git
-cd AI-sdlc-platform
+cd ai_sdlc_platform
 ```
 
-Then open **[Getting_Started](Getting_Started.md)** (`./setup.sh`, `env/.env`, `sdlc doctor`). Use your team’s auth (PAT, Git Credential Manager, or SSH) if prompted.
+Use the HTTPS URL from your fork or upstream repository page (replace `YOUR_GITHUB_USER`).
+
+Then open **[Getting_Started](Getting_Started.md)** (`./setup.sh`, `env/.env`, `sdlc doctor`).
 
 ## Short navigation (same order as `manual.html` sidebar)
 

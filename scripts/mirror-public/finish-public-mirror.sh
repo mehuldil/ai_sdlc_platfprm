@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # After file copy (rsync or robocopy), apply neutralize + overlays + final neutralize.
-# Usage: bash scripts/mirror-public/finish-public-mirror.sh /path/to/AI_SDLC_Platform
+# Usage: bash scripts/mirror-public/finish-public-mirror.sh /path/to/public-checkout
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

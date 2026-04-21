@@ -10,7 +10,7 @@
 - Language: Java 17
 - Framework: RestExpress (TEJ)
 - Build: Gradle Kotlin DSL
-- Package naming: `com.jio.cloud.{service}.{layer}`
+- Package naming: `com.example.app.{service}.{layer}`
 
 ## Naming Standards
 - Classes: PascalCase

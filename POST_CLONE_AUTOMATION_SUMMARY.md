@@ -29,7 +29,7 @@ Complete post-clone setup automation for the AI-SDLC platform's documentation ec
 
 ```bash
 # 1. Clone repo
-git clone https://github.com/jiocloud/ai-sdlc-platform.git
+git clone https://github.com/example-org/ai-sdlc-platform.git
 cd ai-sdlc-platform
 
 # 2. Run setup (includes SDLC platform + documentation automation)

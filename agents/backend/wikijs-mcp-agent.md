@@ -15,7 +15,7 @@ token_budget: {input: 6000, output: 3000}
 
 ### Architecture Documentation
 ```
-infrastructure/jiocloud/documents/<ProjectName>-Architecture/
+infrastructure/wiki/documents/<ProjectName>-Architecture/
   - System Overview
   - Component Diagram
   - Data Flow
@@ -26,7 +26,7 @@ infrastructure/jiocloud/documents/<ProjectName>-Architecture/
 
 ### API Documentation
 ```
-infrastructure/jiocloud/documents/<ProjectName>-ApiDocumentation/
+infrastructure/wiki/documents/<ProjectName>-ApiDocumentation/
   - API Overview
   - Base URL & Authentication
   - Endpoints Reference

@@ -63,9 +63,9 @@
 ---
 
 ## Component Usage Guide
-- [Storybook](https://storybook.jiocloud.io) — Live component examples
+- [Storybook](https://storybook.example.invalid) — Live component examples
 - [Figma](https://figma.com/...) — Design specs
-- [GitHub](https://github.com/jiocloud/ui-library) — Component source code
+- [GitHub](https://github.com/example-org/ui-library) — Component source code
 
 ---
 

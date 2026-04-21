@@ -1,10 +1,9 @@
 #Requires -Version 5.1
 <#
-  Windows mirror: canonical repo -> public GitHub checkout (no rsync required).
+  Windows: copy full platform tree -> public distribution directory (no rsync required).
   Same directory/file excludes as rsync-excludes.txt.
-  After robocopy, run Git Bash: bash scripts/mirror-public/sync-to-public-mirror.sh /path/to/dest
-  with rsync disabled — or source neutralize-public-mirror.sh and run neutralize_public_mirror,
-  then copy overlays (see sync-to-public-mirror.sh).
+  After robocopy, run: bash scripts/mirror-public/finish-public-mirror.sh /path/to/dest
+  (neutralize + overlays; see scripts/mirror-public/README.md).
 #>
 param(
   [Parameter(Mandatory = $false)]

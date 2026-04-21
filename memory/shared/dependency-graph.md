@@ -12,7 +12,7 @@ Real-time dependency graph showing how services and modules communicate. Updated
 
 ## Service A (Backend)
 - **Owner**: Backend Team
-- **Repo**: github.com/jiocloud/service-a
+- **Repo**: github.com/example-org/service-a
 - **Status**: EXISTING
 
 ### Outbound Dependencies
@@ -45,7 +45,7 @@ Frontend → Service A
 
 ## Service B (Backend)
 - **Owner**: Backend Team
-- **Repo**: github.com/jiocloud/service-b
+- **Repo**: github.com/example-org/service-b
 - **Status**: EXISTING
 
 ### Outbound Dependencies
@@ -73,14 +73,14 @@ Service A → Service B
 
 ## Frontend (React Web)
 - **Owner**: Frontend Team
-- **Repo**: github.com/jiocloud/web-frontend
+- **Repo**: github.com/example-org/web-frontend
 - **Status**: EXISTING
 
 ### Outbound Dependencies
 ```
 Frontend → API Gateway
   Protocol: REST/HTTPS
-  Base URL: https://api.jiocloud.io
+  Base URL: https://api.example.invalid
   Auth: Bearer JWT
   Timeout: 30000ms
 
@@ -94,7 +94,7 @@ Frontend → Design System (Figma)
 
 ## Mobile App (React Native)
 - **Owner**: Mobile Team
-- **Repo**: github.com/jiocloud/mobile-app
+- **Repo**: github.com/example-org/mobile-app
 - **Status**: EXISTING
 
 ### Outbound Dependencies
@@ -114,7 +114,7 @@ Mobile → Native Bridge (iOS/Android)
 
 ## New Service C (TBD)
 - **Owner**: TBD
-- **Repo**: github.com/jiocloud/service-c
+- **Repo**: github.com/example-org/service-c
 - **Status**: NEW (Planned Sprint 25)
 
 ### Planned Outbound Dependencies

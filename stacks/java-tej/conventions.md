@@ -27,8 +27,8 @@ TEJ (Tele-Engineering Java) is your-ado-org's internal framework for building RE
 - Scope: Package-private or public static final
 
 ### Packages
-- **Structure**: `com.jio.cloud.{service}.{layer}`
-- Example: `com.jio.cloud.auth.controller`, `com.jio.cloud.auth.service`
+- **Structure**: `com.example.app.{service}.{layer}`
+- Example: `com.example.app.auth.controller`, `com.example.app.auth.service`
 - Layers: `controller`, `service`, `repository`, `model`, `exception`, `util`
 
 ## Error Handling

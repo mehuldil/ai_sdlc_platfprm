@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Sync Azure DevOps canonical tree → local GitHub mirror checkout (neutral URLs + overlays).
+# Copy full platform tree → public distribution checkout, then neutralize + overlays.
 # Usage: bash scripts/mirror-public/sync-to-public-mirror.sh [DEST_DIR]
 # Default DEST: ../AI_SDLC_Platform relative to parent of repo root.
 set -euo pipefail
@@ -44,8 +44,8 @@ if [[ ! -f "$EXCLUDES" ]]; then
   exit 1
 fi
 
-echo "Source (Azure canonical): $REPO_ROOT"
-echo "Dest (public mirror):     $DEST"
+echo "Source (full checkout): $REPO_ROOT"
+echo "Dest (public tree):     $DEST"
 echo ""
 
 mkdir -p "$DEST"
@@ -63,7 +63,7 @@ export PUBLIC_MIRROR_GITHUB_CLONE
 bash "$SCRIPT_DIR/finish-public-mirror.sh" "$DEST"
 
 echo ""
-echo "Done. Next in the mirror repo:"
+echo "Done. Next in the public checkout:"
 echo "  cd \"$DEST\""
 echo "  git status"
 echo "  node User_Manual/build-manual-html.mjs   # regenerates manual.html from neutralized Markdown"

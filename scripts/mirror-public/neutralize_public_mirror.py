@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Brand-neutral replacements for public GitHub mirror. Faster than shell find+sed on Windows.
-Usage: python3 scripts/mirror-public/neutralize_public_mirror.py /path/to/mirror
+Brand-neutral text pass for a public distribution tree. Faster than shell find+sed on Windows.
+Usage: python3 scripts/mirror-public/neutralize_public_mirror.py /path/to/checkout
 Env: PUBLIC_MIRROR_GITHUB_CLONE (default https://github.com/YOUR_GITHUB_USER/ai_sdlc_platform.git)
 """
 from __future__ import annotations
@@ -43,9 +43,12 @@ NAMES = {"dockerfile", "makefile"}
 def should_process(p: Path) -> bool:
     if p.name == "manual.html":
         return False
+    n = p.name.lower()
+    if n.endswith(".env") or ".env." in n or n.endswith(".env.example") or n.endswith(".env.local"):
+        return True
     if p.suffix.lower() in TEXT_SUFFIXES:
         return True
-    return p.name.lower() in NAMES
+    return n in NAMES
 
 
 def neutralize_text(s: str, gh_clone: str) -> str:
@@ -58,6 +61,9 @@ def neutralize_text(s: str, gh_clone: str) -> str:
     s = s.replace("existing mobile number", "existing mobile number")
     s = s.replace("mobile number", "mobile number")
     s = s.replace("example process template", "example process template")
+    s = s.replace("when project rules require Custom.* fields", "when project rules require Custom.* fields")
+    s = s.replace("in your Azure DevOps project require", "in your Azure DevOps project require")
+    s = s.replace("(your process template uses", "(your process template uses")
     s = s.replace(
         "https://github.com/YOUR_GITHUB_USER/ai_sdlc_platform.git",
         gh_clone,
@@ -75,6 +81,7 @@ def neutralize_text(s: str, gh_clone: str) -> str:
     s = s.replace("Custom.ApplicationPlatform", "Custom.ApplicationPlatform")
     s = s.replace("Custom.", "Custom.")
     s = s.replace("YourAzureProject", "YourAzureProject")
+    s = re.sub(r"(?i)example-app", "example-app", s)
     s = s.replace("Application platform", "Application platform")
     s = s.replace("YourAzureProject", "YourAzureProject")
     s = s.replace(
@@ -95,6 +102,18 @@ def neutralize_text(s: str, gh_clone: str) -> str:
     s = s.replace("https://github.com/YOUR_GITHUB_USER/", "https://github.com/YOUR_GITHUB_USER/")
     s = s.replace("YOUR_GITHUB_USER/ai_sdlc_platform", "YOUR_GITHUB_USER/ai_sdlc_platform")
     s = s.replace("${HOME}/YourAzureProject", "${HOME}/projects/your-app")
+    # Sample URLs and placeholders in memory/ and docs (generic examples)
+    s = s.replace("github.com/example-org/", "github.com/example-org/")
+    s = s.replace("github.com/example-org", "github.com/example-org")
+    s = s.replace("https://api.example.invalid", "https://api.example.invalid")
+    s = s.replace("https://staging-api.example.invalid", "https://staging-api.example.invalid")
+    s = s.replace("https://cdn.example.invalid", "https://cdn.example.invalid")
+    s = s.replace("https://storybook.example.invalid", "https://storybook.example.invalid")
+    s = s.replace("infrastructure/wiki/", "infrastructure/wiki/")
+    s = s.replace("com.example.app.", "com.example.app.")
+    s = re.sub(r"(?i)example-org", "example-org", s)
+    s = re.sub(r"(?i)\bneutral\s+mirror\b", "public repository", s)
+    s = re.sub(r"(?i)public\s+github\s+mirror", "public GitHub distribution", s)
     return s
 
 

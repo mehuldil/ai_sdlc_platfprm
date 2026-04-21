@@ -10,7 +10,7 @@
 ### auth-service
 - **Owner**: John Doe (@john-doe)
 - **Primary Language**: Java 17 (RestExpress)
-- **Repository**: github.com/jiocloud/auth-service
+- **Repository**: github.com/example-org/auth-service
 - **Status**: Production ✓
 - **Version**: v2.0 (OpenAPI 3.1)
 - **SLA**: 99.95% uptime
@@ -19,7 +19,7 @@
 ### profile-service
 - **Owner**: Jane Smith (@jane-smith)
 - **Primary Language**: Java 17 (RestExpress)
-- **Repository**: github.com/jiocloud/profile-service
+- **Repository**: github.com/example-org/profile-service
 - **Status**: Production ✓
 - **Version**: v1.5 (OpenAPI 3.1)
 - **SLA**: 99.9% uptime
@@ -28,7 +28,7 @@
 ### notification-service
 - **Owner**: Bob Johnson (@bob-johnson)
 - **Primary Language**: Java 17 (RestExpress)
-- **Repository**: github.com/jiocloud/notification-service
+- **Repository**: github.com/example-org/notification-service
 - **Status**: Production ✓
 - **Version**: v1.0 (OpenAPI 3.1)
 - **SLA**: 99.5% uptime
@@ -37,7 +37,7 @@
 ### search-service
 - **Owner**: Alice Wong (@alice-wong)
 - **Primary Language**: Java 17 (RestExpress)
-- **Repository**: github.com/jiocloud/search-service
+- **Repository**: github.com/example-org/search-service
 - **Status**: Production ✓
 - **Version**: v1.2 (OpenAPI 3.1)
 - **SLA**: 99.9% uptime

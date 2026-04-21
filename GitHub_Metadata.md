@@ -1,9 +1,6 @@
 # GitHub repository metadata
 
-**Public repository:** [`https://github.com/YOUR_GITHUB_USER/ai_sdlc_platform`](https://github.com/YOUR_GITHUB_USER/ai_sdlc_platform)  
-GitHub shows the canonical HTTPS URL in **lowercase** (`ai_sdlc_platform`); the display name may appear as **AI_SDLC_Platform**. Same repository.
-
-A sibling **canonical** tree may live on **Azure DevOps** for internal work; this GitHub repo is the **neutral mirror** for sharing and stars.
+**Public repository:** use the clone URL from this repository’s GitHub **Code** button (HTTPS; GitHub may show the name in lowercase).
 
 ---
 
@@ -17,9 +14,7 @@ AI-native SDLC platform: 15 stages, 8 roles, agents, skills, rules, and one sdlc
 
 ## Website field (optional)
 
-```
-https://github.com/YOUR_GITHUB_USER/ai_sdlc_platform
-```
+Use the repository URL shown on GitHub, or leave empty.
 
 ---
 
@@ -50,13 +45,15 @@ Ship with AI without losing discipline: one SDLC platform—stages, agents, skil
 
 ## Clone URL (copy for docs and posts)
 
+Use:
+
 ```text
 https://github.com/YOUR_GITHUB_USER/ai_sdlc_platform.git
 ```
 
-Default folder after `git clone`: `ai_sdlc_platform` (or rename locally).
+Replace `YOUR_GITHUB_USER` with your GitHub username or organization. Default folder after `git clone`: `ai_sdlc_platform` (or rename locally).
 
-Sync local `origin` after a GitHub rename:
+If you rename the repo on GitHub, update `origin`:
 
 ```bash
 git remote set-url origin https://github.com/YOUR_GITHUB_USER/ai_sdlc_platform.git

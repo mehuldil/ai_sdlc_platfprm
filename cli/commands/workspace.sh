@@ -3,7 +3,7 @@
 #
 # Problem solved:
 #   A module owner with 10+ microservice repos under one parent folder
-#   (e.g. jioaiphotos/{TejAuthService,tejpublicservices,tejsecurity})
+#   (e.g. example-app/{TejAuthService,tejpublicservices,tejsecurity})
 #   should not re-run `sdlc setup` per repo. This command:
 #     (1) caches per-user + per-workspace work once (creds, IDE plugin, doc libs, hooks config)
 #     (2) iterates children, running only the strictly per-repo pieces
