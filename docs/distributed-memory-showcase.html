@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-SDLC: Distributed Memory System - Team Collaboration Showcase</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: #1a1a2e;
+            background: #f7fafc;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #1a1a2e;
+            margin-bottom: 12px;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: #666;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .section {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .section h2 {
+            font-size: 1.8rem;
+            color: #1a1a2e;
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .section h3 {
+            font-size: 1.3rem;
+            color: #764ba2;
+            margin: 28px 0 16px 0;
+        }
+
+        /* Two Types of Memory */
+        .memory-types {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 24px;
+        }
+
+        .memory-card {
+            padding: 28px;
+            border-radius: 12px;
+            position: relative;
+        }
+
+        .memory-card.semantic {
+            background: linear-gradient(135deg, #ebf8ff 0%, #bee3f8 100%);
+            border: 2px solid #4299e1;
+        }
+
+        .memory-card.module {
+            background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%);
+            border: 2px solid #48bb78;
+        }
+
+        .memory-card h4 {
+            font-size: 1.2rem;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .memory-card.semantic h4 { color: #2b6cb0; }
+        .memory-card.module h4 { color: #276749; }
+
+        .memory-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
+
+        .semantic .memory-icon { background: #4299e1; }
+        .module .memory-icon { background: #48bb78; }
+
+        .memory-card table {
+            width: 100%;
+            font-size: 0.9rem;
+            margin-top: 12px;
+        }
+
+        .memory-card td {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .memory-card td:first-child {
+            font-weight: 600;
+            width: 35%;
+        }
+
+        /* Team Memory Grid */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-top: 24px;
+        }
+
+        .team-card {
+            padding: 24px;
+            border-radius: 12px;
+            border: 2px solid;
+            position: relative;
+        }
+
+        .team-card.product { border-color: #ed8936; background: #fffaf0; }
+        .team-card.backend { border-color: #4299e1; background: #ebf8ff; }
+        .team-card.frontend { border-color: #9f7aea; background: #faf5ff; }
+        .team-card.qa { border-color: #e53e3e; background: #fff5f5; }
+        .team-card.shared { border-color: #38a169; background: #f0fff4; }
+
+        .team-card h4 {
+            font-size: 1.1rem;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .team-card.product h4 { color: #c05621; }
+        .team-card.backend h4 { color: #2b6cb0; }
+        .team-card.frontend h4 { color: #6b46c1; }
+        .team-card.qa h4 { color: #c53030; }
+        .team-card.shared h4 { color: #276749; }
+
+        .team-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            color: white;
+        }
+
+        .product .team-icon { background: #ed8936; }
+        .backend .team-icon { background: #4299e1; }
+        .frontend .team-icon { background: #9f7aea; }
+        .qa .team-icon { background: #e53e3e; }
+        .shared .team-icon { background: #38a169; }
+
+        .team-files {
+            list-style: none;
+            font-size: 0.9rem;
+        }
+
+        .team-files li {
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .team-files li::before {
+            content: "📄";
+            font-size: 0.8rem;
+        }
+
+        /* Sync Flow Diagram */
+        .sync-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 24px;
+            padding: 24px;
+            background: #f7fafc;
+            border-radius: 12px;
+        }
+
+        .sync-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .sync-box {
+            padding: 16px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-align: center;
+            flex: 1;
+        }
+
+        .sync-box.local {
+            background: #bee3f8;
+            color: #2b6cb0;
+            border: 2px solid #4299e1;
+        }
+
+        .sync-box.git {
+            background: #fbd38d;
+            color: #c05621;
+            border: 2px solid #ed8936;
+        }
+
+        .sync-box.team {
+            background: #c6f6d5;
+            color: #276749;
+            border: 2px solid #48bb78;
+        }
+
+        .sync-arrow {
+            font-size: 1.5rem;
+            color: #a0aec0;
+        }
+
+        .sync-label {
+            font-size: 0.85rem;
+            color: #666;
+            text-align: center;
+            margin-top: 4px;
+        }
+
+        /* Real-World Scenario */
+        .scenario-timeline {
+            position: relative;
+            margin-top: 24px;
+            padding-left: 40px;
+        }
+
+        .scenario-timeline::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .timeline-event {
+            position: relative;
+            margin-bottom: 28px;
+            padding: 20px;
+            background: #f7fafc;
+            border-radius: 12px;
+            border-left: 4px solid;
+        }
+
+        .timeline-event.product { border-left-color: #ed8936; }
+        .timeline-event.backend { border-left-color: #4299e1; }
+        .timeline-event.frontend { border-left-color: #9f7aea; }
+        .timeline-event.qa { border-left-color: #e53e3e; }
+        .timeline-event.shared { border-left-color: #38a169; }
+
+        .timeline-event::before {
+            content: '';
+            position: absolute;
+            left: -34px;
+            top: 24px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid;
+        }
+
+        .timeline-event.product::before { border-color: #ed8936; }
+        .timeline-event.backend::before { border-color: #4299e1; }
+        .timeline-event.frontend::before { border-color: #9f7aea; }
+        .timeline-event.qa::before { border-color: #e53e3e; }
+        .timeline-event.shared::before { border-color: #38a169; }
+
+        .event-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .event-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .event-badge.product { background: #ed8936; }
+        .event-badge.backend { background: #4299e1; }
+        .event-badge.frontend { background: #9f7aea; }
+        .event-badge.qa { background: #e53e3e; }
+        .event-badge.system { background: #38a169; }
+
+        .event-title {
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+
+        .event-content {
+            color: #4a5568;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .event-content code {
+            background: #edf2f7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.85rem;
+        }
+
+        .memory-impact {
+            margin-top: 12px;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .memory-impact h5 {
+            font-size: 0.85rem;
+            color: #667eea;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .memory-impact ul {
+            margin-left: 16px;
+            font-size: 0.9rem;
+            color: #4a5568;
+        }
+
+        .memory-impact li {
+            margin-bottom: 4px;
+        }
+
+        /* Commands Reference */
+        .command-block {
+            background: #1a1a2e;
+            color: #68d391;
+            padding: 16px 20px;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9rem;
+            margin: 12px 0;
+            overflow-x: auto;
+        }
+
+        .command-block .comment {
+            color: #a0aec0;
+        }
+
+        .command-block .prompt {
+            color: #fc8181;
+        }
+
+        /* Git Hooks Diagram */
+        .hooks-diagram {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .hook-card {
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .hook-card.pre-commit {
+            background: #fed7d7;
+            border: 2px solid #e53e3e;
+        }
+
+        .hook-card.post-commit {
+            background: #c6f6d5;
+            border: 2px solid #48bb78;
+        }
+
+        .hook-card.post-merge {
+            background: #bee3f8;
+            border: 2px solid #4299e1;
+        }
+
+        .hook-card h5 {
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+        }
+
+        .hook-card.pre-commit h5 { color: #c53030; }
+        .hook-card.post-commit h5 { color: #276749; }
+        .hook-card.post-merge h5 { color: #2b6cb0; }
+
+        .hook-card p {
+            font-size: 0.85rem;
+            color: #4a5568;
+        }
+
+        /* Benefits Grid */
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-top: 24px;
+        }
+
+        .benefit-card {
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+        }
+
+        .benefit-card h4 {
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+        }
+
+        .benefit-card p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Summary Box */
+        .summary-box {
+            background: linear-gradient(135deg, #1a1a2e 0%, #2d3748 100%);
+            color: white;
+            padding: 32px;
+            border-radius: 12px;
+            margin-top: 24px;
+        }
+
+        .summary-box h3 {
+            color: #fff;
+            margin-top: 0;
+        }
+
+        .summary-box ul {
+            margin-left: 20px;
+            line-height: 2;
+        }
+
+        @media (max-width: 768px) {
+            .memory-types {
+                grid-template-columns: 1fr;
+            }
+            .hooks-diagram {
+                grid-template-columns: 1fr;
+            }
+            .sync-row {
+                flex-direction: column;
+            }
+            .sync-arrow {
+                transform: rotate(90deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Distributed Memory System</h1>
+            <p>How Product, Backend, Frontend, and QA teams share context and collaborate seamlessly using AI-SDLC's distributed semantic memory</p>
+        </div>
+
+        <!-- Two Types of Memory -->
+        <div class="section">
+            <h2>Two Types of Memory</h2>
+            <p style="color: #666; margin-bottom: 16px;">Understanding the difference between decision memory and code knowledge is key to using the system effectively.</p>
+            
+            <div class="memory-types">
+                <div class="memory-card semantic">
+                    <h4>
+                        <span class="memory-icon">🧠</span>
+                        Semantic Memory (Decisions)
+                    </h4>
+                    <table>
+                        <tr>
+                            <td>Stores</td>
+                            <td>Decisions, rationales, QA notes, long-lived facts</td>
+                        </tr>
+                        <tr>
+                            <td>Location</td>
+                            <td><code>.sdlc/memory/</code> — SQLite (local) + JSONL (team)</td>
+                        </tr>
+                        <tr>
+                            <td>Good for</td>
+                            <td>"What did we decide about OAuth timeouts?"</td>
+                        </tr>
+                        <tr>
+                            <td>Sync</td>
+                            <td>Git hooks export/import JSONL on commit/pull</td>
+                        </tr>
+                        <tr>
+                            <td>Commands</td>
+                            <td><code>sdlc memory semantic-query</code>, <code>semantic-upsert</code></td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <div class="memory-card module">
+                    <h4>
+                        <span class="memory-icon">📦</span>
+                        Module KB (Code Facts)
+                    </h4>
+                    <table>
+                        <tr>
+                            <td>Stores</td>
+                            <td>APIs, contracts, dependencies, layout from code</td>
+                        </tr>
+                        <tr>
+                            <td>Location</td>
+                            <td><code>.sdlc/module/</code> — YAML/JSON (committed)</td>
+                        </tr>
+                        <tr>
+                            <td>Good for</td>
+                            <td>"What endpoints does this service expose?"</td>
+                        </tr>
+                        <tr>
+                            <td>Sync</td>
+                            <td>Hooks run <code>sdlc module update</code> on commit</td>
+                        </tr>
+                        <tr>
+                            <td>Commands</td>
+                            <td><code>sdlc module init</code>, <code>module load</code>, <code>module validate</code></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Team Memory Structure -->
+        <div class="section">
+            <h2>Team Memory Structure</h2>
+            <p style="color: #666; margin-bottom: 16px;">Each team maintains their own memory space, with shared spaces for cross-team coordination.</p>
+            
+            <div class="team-grid">
+                <div class="team-card product">
+                    <h4><span class="team-icon">📋</span> Product Team</h4>
+                    <ul class="team-files">
+                        <li>roadmap.md — Sprint goals & priorities</li>
+                        <li>user-research.md — Research findings</li>
+                        <li>acceptance-criteria.md — AC patterns</li>
+                        <li>decision-log.md — Product decisions</li>
+                    </ul>
+                </div>
+                
+                <div class="team-card backend">
+                    <h4><span class="team-icon">⚙️</span> Backend Team</h4>
+                    <ul class="team-files">
+                        <li>architecture.md — Service architecture</li>
+                        <li>service-registry.md — Service ownership</li>
+                        <li>conventions.md — Coding standards</li>
+                        <li>tech-stack.md — Technology choices</li>
+                    </ul>
+                </div>
+                
+                <div class="team-card frontend">
+                    <h4><span class="team-icon">🎨</span> Frontend Team</h4>
+                    <ul class="team-files">
+                        <li>architecture_decisions.md — FE patterns</li>
+                        <li>workflow_state.md — Current sprint status</li>
+                        <li>performance_lessons.md — Optimization notes</li>
+                        <li>bug_history.md — Known issues</li>
+                    </ul>
+                </div>
+                
+                <div class="team-card qa">
+                    <h4><span class="team-icon">🧪</span> QA Team</h4>
+                    <ul class="team-files">
+                        <li>workflow-state.md — Test campaigns</li>
+                        <li>stlc-architecture.md — Test framework</li>
+                        <li>regression-patterns.md — Known regressions</li>
+                        <li>known-flaky-tests.md — Flaky test list</li>
+                    </ul>
+                </div>
+                
+                <div class="team-card shared" style="grid-column: span 2;">
+                    <h4><span class="team-icon">🔗</span> Shared / Cross-Team</h4>
+                    <ul class="team-files">
+                        <li>cross-team-log.md — Cross-team decisions with ADO refs</li>
+                        <li>service-registry.md — Service ownership across teams</li>
+                        <li>dependency-graph.md — Cross-service dependencies</li>
+                        <li>sprint-context/current-sprint.md — Shared sprint state</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Git Hooks Sync Flow -->
+        <div class="section">
+            <h2>Memory Sync via Git Hooks</h2>
+            <p style="color: #666; margin-bottom: 16px;">Memory flows between engineers through git — no separate infrastructure needed.</p>
+            
+            <div class="sync-flow">
+                <div class="sync-row">
+                    <div class="sync-box local">
+                        Your Local SQLite<br><code>.sdlc/memory/semantic-memory.sqlite3</code>
+                    </div>
+                    <div class="sync-arrow">→</div>
+                    <div class="sync-box git">
+                        Git Commit Hook<br>Export to JSONL
+                    </div>
+                    <div class="sync-arrow">→</div>
+                    <div class="sync-box team">
+                        Team JSONL File<br><code>semantic-memory-team.jsonl</code>
+                    </div>
+                </div>
+                <div class="sync-label">Pre-commit: Local SQLite → Export to JSONL → Commit JSONL to git</div>
+                
+                <div class="sync-row">
+                    <div class="sync-box team">
+                        Team JSONL File<br>(From Git Remote)
+                    </div>
+                    <div class="sync-arrow">→</div>
+                    <div class="sync-box git">
+                        Post-Merge Hook<br>Import from JSONL
+                    </div>
+                    <div class="sync-arrow">→</div>
+                    <div class="sync-box local">
+                        Your Local SQLite<br>Updated with team memory
+                    </div>
+                </div>
+                <div class="sync-label">Post-merge: Pull JSONL → Import to SQLite → AI now sees team context</div>
+            </div>
+
+            <div class="hooks-diagram">
+                <div class="hook-card pre-commit">
+                    <h5>semantic-memory-pre-commit.sh</h5>
+                    <p>Exports your local writes to JSONL for team sync</p>
+                </div>
+                <div class="hook-card post-commit">
+                    <h5>module-update.sh</h5>
+                    <p>Updates module KB from code changes</p>
+                </div>
+                <div class="hook-card post-merge">
+                    <h5>semantic-memory-post-merge.sh</h5>
+                    <p>Imports teammates' JSONL to your SQLite</p>
+                </div>
+            </div>
+
+            <div class="command-block">
+<span class="prompt">$</span> sdlc memory semantic-status
+<span class="comment"># Check local memory status</span>
+
+<span class="prompt">$</span> sdlc memory semantic-upsert --orchestrator=qa --namespace=requirements --key=US-123 --content-file=notes.md
+<span class="comment"># Add a decision to shared memory</span>
+
+<span class="prompt">$</span> sdlc memory semantic-query --text="oauth timeout edge case" --orchestrator=qa --limit=5
+<span class="comment"># Query shared team memory</span>
+
+<span class="prompt">$</span> sdlc module load api
+<span class="comment"># Load only the API module (2-3K tokens vs 12K full load)</span>
+            </div>
+        </div>
+
+        <!-- Real-World Scenario -->
+        <div class="section">
+            <h2>Real-World Scenario: Profile Edit Feature</h2>
+            <p style="color: #666; margin-bottom: 16px;">Watch how distributed memory enables seamless collaboration across all four teams during a typical feature delivery.</p>
+            
+            <div class="scenario-timeline">
+                <!-- Product -->
+                <div class="timeline-event product">
+                    <div class="event-header">
+                        <span class="event-badge product">PRODUCT</span>
+                        <span class="event-title">Story Created: User Profile Edit (US-123)</span>
+                    </div>
+                    <div class="event-content">
+                        Product creates a 4-tier story using template: <code>sdlc story create master</code><br>
+                        Acceptance criteria include: email validation, profile photo upload, mobile responsive.
+                    </div>
+                    <div class="memory-impact">
+                        <h5>Memory Written</h5>
+                        <ul>
+                            <li><code>memory/team/product/roadmap.md</code> — US-123 added to Sprint 25</li>
+                            <li><code>memory/shared/cross-team-log.md</code> — Decision: Profile edit feature approved</li>
+                            <li>ADO Work Item AB#15350 created with full traceability</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Backend -->
+                <div class="timeline-event backend">
+                    <div class="event-header">
+                        <span class="event-badge backend">BACKEND</span>
+                        <span class="event-title">API Contract Design & Implementation</span>
+                    </div>
+                    <div class="event-content">
+                        Backend queries shared memory: <code>sdlc memory semantic-query --text="profile photo storage"</code><br>
+                        Finds previous decision on file upload patterns. Designs API contract v1.3 for profile endpoints.
+                    </div>
+                    <div class="memory-impact">
+                        <h5>Memory Written</h5>
+                        <ul>
+                            <li><code>memory/team/backend/service-registry.md</code> — profile-service v1.5 updated</li>
+                            <li><code>memory/team/backend/architecture.md</code> — Photo upload flow documented</li>
+                            <li><code>memory/shared/cross-team-log.md</code> — API contract v1.3 published (impacts Frontend)</li>
+                            <li><code>.sdlc/module/</code> — Module KB updated with new endpoints</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Frontend -->
+                <div class="timeline-event frontend">
+                    <div class="event-header">
+                        <span class="event-badge frontend">FRONTEND</span>
+                        <span class="event-title">UI Implementation Begins</span>
+                    </div>
+                    <div class="event-content">
+                        Frontend loads context: <code>sdlc module load api</code> (2K tokens vs 12K full)<br>
+                        Queries shared memory for design tokens and API contract. Discovers Backend's v1.3 contract.
+                    </div>
+                    <div class="memory-impact">
+                        <h5>Memory Read & Written</h5>
+                        <ul>
+                            <li><strong>Read:</strong> <code>memory/team/ui/design-system.md</code> — Design tokens for forms</li>
+                            <li><strong>Read:</strong> <code>memory/shared/cross-team-log.md</code> — API contract v1.3</li>
+                            <li><strong>Written:</strong> <code>memory/team/frontend/workflow_state.md</code> — "Implementing US-123, awaiting Backend deployment"</li>
+                            <li><strong>Written:</strong> <code>memory/team/frontend/bug_history.md</code> — "Mobile responsive issue on iPad 11-inch"</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Sync Point -->
+                <div class="timeline-event shared">
+                    <div class="event-header">
+                        <span class="event-badge system">SYNC</span>
+                        <span class="event-title">Git Commit Triggers Memory Sync</span>
+                    </div>
+                    <div class="event-content">
+                        Backend commits API changes. Git hook automatically:<br>
+                        1. Exports semantic memory to JSONL<br>
+                        2. Updates module KB from code changes<br>
+                        3. Frontend pulls and imports team memory automatically
+                    </div>
+                    <div class="memory-impact">
+                        <h5>Memory Flow</h5>
+                        <ul>
+                            <li>Backend's <code>semantic-memory-pre-commit.sh</code> exports to JSONL</li>
+                            <li>Backend's <code>module-update.sh</code> refreshes <code>.sdlc/module/</code></li>
+                            <li>Frontend's <code>semantic-memory-post-merge.sh</code> imports after pull</li>
+                            <li>Frontend's AI now knows: "Backend API is ready for integration"</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- QA -->
+                <div class="timeline-event qa">
+                    <div class="event-header">
+                        <span class="event-badge qa">QA</span>
+                        <span class="event-title">Test Strategy & Execution</span>
+                    </div>
+                    <div class="event-content">
+                        QA queries shared memory for test patterns: <code>sdlc memory semantic-query --text="file upload test patterns"</code><br>
+                        Loads module KB for API contracts. Creates test plan based on known regression patterns.
+                    </div>
+                    <div class="memory-impact">
+                        <h5>Memory Read & Written</h5>
+                        <ul>
+                            <li><strong>Read:</strong> <code>memory/team/qa/regression-patterns.md</code> — File upload edge cases</li>
+                            <li><strong>Read:</strong> <code>memory/shared/cross-team-log.md</code> — API contract changes</li>
+                            <li><strong>Written:</strong> <code>memory/team/qa/workflow-state.md</code> — "SIT testing US-123, starts 2026-04-15"</li>
+                            <li><strong>Written:</strong> <code>memory/team/qa/known-flaky-tests.md</code> — "Photo upload test: flaky on slow networks"</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Final Sync -->
+                <div class="timeline-event shared">
+                    <div class="event-header">
+                        <span class="event-badge system">RELEASE</span>
+                        <span class="event-title">Feature Release & Memory Archive</span>
+                    </div>
+                    <div class="event-content">
+                        PR merged. All teams' memory updated with release notes. QA marks tests as stable.
+                        Cross-team log updated: "Profile edit feature released (AB#15350)"
+                    </div>
+                    <div class="memory-impact">
+                        <h5>Final Memory State</h5>
+                        <ul>
+                            <li><code>memory/shared/cross-team-log.md</code> — Release decision logged with ADO ref</li>
+                            <li>All team workflow states cleared for next sprint</li>
+                            <li>Semantic memory entries marked "superseded" or "archived"</li>
+                            <li>Module KB updated with production API contracts</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Benefits -->
+        <div class="section">
+            <h2>Key Benefits of Distributed Memory</h2>
+            
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <h4>No Status Meetings</h4>
+                    <p>"What did Backend decide about the API?" — Just query the shared memory. Cross-team log shows all decisions with ADO references.</p>
+                </div>
+                <div class="benefit-card">
+                    <h4>New Engineers Productive Day 1</h4>
+                    <p>`sdlc module show` gives compact overview. `sdlc memory semantic-query` answers "why did we do it this way?" instantly.</p>
+                </div>
+                <div class="benefit-card">
+                    <h4>Knowledge Survives Turnover</h4>
+                    <p>Decisions live in git, not employees' heads. When someone leaves, their context remains in version-controlled memory files.</p>
+                </div>
+                <div class="benefit-card">
+                    <h4>Contextual AI Assistance</h4>
+                    <p>AI agents load relevant team memory automatically. "Implement the profile edit" — AI knows the API contract, design tokens, and known issues.</p>
+                </div>
+                <div class="benefit-card">
+                    <h4>Audit-Ready Traceability</h4>
+                    <p>Every decision linked to ADO work items. Cross-team log shows who decided what, when, and why — compliance ready.</p>
+                </div>
+                <div class="benefit-card">
+                    <h4>Efficient Token Usage</h4>
+                    <p>Load only what you need: `sdlc module load api` (2K tokens) vs full codebase (12K tokens). Budget enforced per role.</p>
+                </div>
+            </div>
+
+            <div class="summary-box">
+                <h3>Summary</h3>
+                <ul>
+                    <li><strong>Team Memory:</strong> Each team (Product, Backend, Frontend, QA) maintains their own <code>memory/team/</code> directory</li>
+                    <li><strong>Shared Memory:</strong> Cross-team decisions live in <code>memory/shared/</code> with full ADO traceability</li>
+                    <li><strong>Git-Powered Sync:</strong> No separate infrastructure — memory flows through git hooks (export on commit, import on pull)</li>
+                    <li><strong>Two Storage Types:</strong> SQLite (local, gitignored) + JSONL (team bus, committed) for semantic memory; YAML/JSON files for module KB</li>
+                    <li><strong>Ask-First Access:</strong> AI queries memory before acting — "What do we know about this?" — ensuring informed decisions</li>
+                    <li><strong>Lifecycle Governance:</strong> Entries have states (active, superseded, archived) with retention policies and audit trails</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
