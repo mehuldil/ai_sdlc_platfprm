@@ -46,6 +46,7 @@ const ORDER = [
   "ADO_MCP_Integration.md",
   "Agents_Skills_Rules.md",
   "Architecture.md",
+  "../docs/sdlc-stage-role-mapping.md",
   "Token_Efficiency_and_Context_Loading.md",
   "Repository_Complexity_Explained.md",
   "PR_Merge_Process.md",

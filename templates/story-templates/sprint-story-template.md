@@ -5,6 +5,8 @@
 > **No invention:** Missing facts → `USER_INPUT_REQUIRED`, not generic filler.
 >
 > **No redundancy:** **Context** = why this sprint. **What we're building** = deliverable summary only—do not paste the same user journey twice. **How we'll measure** = sprint delta vs master metric; do not re-copy the entire Master analytics section.
+>
+> **Product vs Technical:** Sprint Stories are **product-focused** (WHAT). Technical implementation details (architecture, tech choices, data model) belong in a **Tech Story** (`tech-story-template.md`), not here.
 
 ---
 
@@ -65,16 +67,6 @@
 
 | ID / ref | Full text | When shown |
 |----------|-----------|------------|
-
----
-
-## 🏗️ Technical Approach
-**<How we'll build it - architecture level, not code>**
-
-- **Architecture:** [e.g., "Client-side state machine", "Server-side orchestration"] *(optional)*
-- **Tech choices:** [e.g., "React Suspense for loading", "GraphQL for data fetch"] *(optional)*
-- **Integration points:** [What systems does this touch?] *(optional)*
-- **Data model:** [New tables/schemas needed?] *(optional)*
 
 ---
 
