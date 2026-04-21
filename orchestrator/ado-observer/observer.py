@@ -710,8 +710,8 @@ def create_webhook_app(observer: ADOObserver) -> FastAPI:
 async def main():
     """Main entry point."""
     # Configuration from environment
-    org = os.getenv("ADO_ORG", "JPL-Limited")
-    project = os.getenv("ADO_PROJECT", "JioCloud")
+    org = os.getenv("ADO_ORG", "your-ado-org")
+    project = os.getenv("ADO_PROJECT", "YourAzureProject")
     pat = os.getenv("ADO_PAT")
     webhook_secret = os.getenv("ADO_WEBHOOK_SECRET")
     mode = os.getenv("ADO_OBSERVER_MODE", "polling")
