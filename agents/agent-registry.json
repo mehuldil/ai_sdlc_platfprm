@@ -1,0 +1,874 @@
+{
+  "version": "2.0.0",
+  "description": "Agent Registry - Complete manifest of all AI agents",
+  "last_updated": "2026-04-13",
+  "tier_1_universal": {
+    "context-guard": {
+      "path": "shared/context-guard.md",
+      "tier": 1,
+      "primary_role": "shared",
+      "description": "Validate preconditions, enforce ASK protocol",
+      "tags": [
+        "validation",
+        "preconditions",
+        "protocol"
+      ],
+      "accepts_roles": [
+        "*"
+      ],
+      "output_cost_tokens": 300,
+      "required_env": []
+    },
+    "smart-routing": {
+      "path": "shared/smart-routing.md",
+      "tier": 1,
+      "primary_role": "shared",
+      "description": "Classify task, suggest route & stage depth",
+      "tags": [
+        "routing",
+        "classification",
+        "advisory"
+      ],
+      "accepts_roles": [
+        "*"
+      ],
+      "output_cost_tokens": 200,
+      "required_env": []
+    },
+    "ado-integration": {
+      "path": "shared/ado-integration.md",
+      "tier": 1,
+      "primary_role": "shared",
+      "description": "Work item CRUD, query, link operations",
+      "tags": [
+        "azure-devops",
+        "work-items",
+        "integration"
+      ],
+      "accepts_roles": [
+        "*"
+      ],
+      "output_cost_tokens": 150,
+      "required_env": [
+        "ADO_PAT"
+      ]
+    },
+    "gate-informant": {
+      "path": "shared/gate-informant.md",
+      "tier": 1,
+      "primary_role": "shared",
+      "description": "Check gate status, inform user, log to ADO (no blocking)",
+      "tags": [
+        "gates",
+        "validation",
+        "logging"
+      ],
+      "accepts_roles": [
+        "*"
+      ],
+      "output_cost_tokens": 250,
+      "required_env": [
+        "ADO_PAT"
+      ]
+    }
+  },
+  "tier_2_domain": {
+    "product": {
+      "product-manager": {
+        "path": "product/product-manager.md",
+        "tier": 2,
+        "primary_role": "product",
+        "description": "PRD authoring, story generation, release planning coordination",
+        "tags": [
+          "product",
+          "prd",
+          "stories"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 1500,
+        "required_env": []
+      }
+    },
+    "backend": {
+      "be-developer-agent": {
+        "path": "backend/be-developer-agent.md",
+        "tier": 2,
+        "primary_role": "backend",
+        "description": "Implement backend code and services",
+        "tags": [
+          "implementation",
+          "backend",
+          "code"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 700,
+        "required_env": []
+      },
+      "be-sdlc-pipeline-agent": {
+        "path": "backend/be-sdlc-pipeline-agent.md",
+        "tier": 2,
+        "primary_role": "backend",
+        "description": "[Auto-discovered] Be Sdlc Pipeline Agent",
+        "tags": [
+          "auto-discovered"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 500,
+        "required_env": []
+      },
+      "elasticsearch-logs-agent": {
+        "path": "backend/elasticsearch-logs-agent.md",
+        "tier": 2,
+        "primary_role": "backend",
+        "description": "[Auto-discovered] Elasticsearch Logs Agent",
+        "tags": [
+          "auto-discovered"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 500,
+        "required_env": []
+      },
+      "wikijs-mcp-agent": {
+        "path": "backend/wikijs-mcp-agent.md",
+        "tier": 2,
+        "primary_role": "backend",
+        "description": "[Auto-discovered] Wikijs Mcp Agent",
+        "tags": [
+          "auto-discovered"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 500,
+        "required_env": []
+      }
+    },
+    "frontend": {
+      "memory-budget-controller": {
+        "path": "frontend/memory-budget-controller.md",
+        "tier": 3,
+        "primary_role": "frontend",
+        "description": "Monitor and enforce per-screen memory budgets",
+        "tags": [
+          "memory",
+          "mobile",
+          "optimization"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 1500,
+        "required_env": []
+      },
+      "crash-monitor": {
+        "path": "frontend/crash-monitor.md",
+        "tier": 3,
+        "primary_role": "frontend",
+        "description": "Analyze crash reports and identify patterns",
+        "tags": [
+          "crashes",
+          "stability",
+          "analytics"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 2000,
+        "required_env": []
+      },
+      "dependency-watchdog": {
+        "path": "frontend/dependency-watchdog.md",
+        "tier": 3,
+        "primary_role": "frontend",
+        "description": "Track library versions and detect vulnerabilities",
+        "tags": [
+          "dependencies",
+          "security",
+          "maintenance"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 1000,
+        "required_env": []
+      },
+      "context-memory-manager": {
+        "path": "frontend/context-memory-manager.md",
+        "tier": 2,
+        "primary_role": "frontend",
+        "description": "Manage persistent session context across sessions",
+        "tags": [
+          "memory",
+          "context",
+          "persistence"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 500,
+        "required_env": []
+      },
+      "android-dev": {
+        "path": "frontend/android-dev.md",
+        "tier": 2,
+        "primary_role": "frontend",
+        "description": "Kotlin/Android MVVM implementation specialist",
+        "tags": [
+          "android",
+          "kotlin",
+          "implementation"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 700,
+        "required_env": []
+      },
+      "architecture-guardian": {
+        "path": "frontend/architecture-guardian.md",
+        "tier": 2,
+        "primary_role": "frontend",
+        "description": "Module boundaries enforcement and circular dependency prevention",
+        "tags": [
+          "architecture",
+          "validation",
+          "dependencies"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 1500,
+        "required_env": []
+      },
+      "cto": {
+        "path": "frontend/cto.md",
+        "tier": 2,
+        "primary_role": "frontend",
+        "description": "Frontend technical leadership and architecture decisions",
+        "tags": [
+          "leadership",
+          "architecture",
+          "decisions"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 1000,
+        "required_env": []
+      },
+      "designer": {
+        "path": "frontend/designer.md",
+        "tier": 2,
+        "primary_role": "frontend",
+        "description": "Figma design specification extraction and handoff coordination",
+        "tags": [
+          "design",
+          "figma",
+          "handoff"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 500,
+        "required_env": []
+      },
+      "developer": {
+        "path": "frontend/developer.md",
+        "tier": 2,
+        "primary_role": "frontend",
+        "description": "Cross-platform frontend implementation orchestrator",
+        "tags": [
+          "implementation",
+          "frontend",
+          "orchestration"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 700,
+        "required_env": []
+      },
+      "ios-dev": {
+        "path": "frontend/ios-dev.md",
+        "tier": 2,
+        "primary_role": "frontend",
+        "description": "Swift/SwiftUI iOS implementation specialist",
+        "tags": [
+          "ios",
+          "swift",
+          "implementation"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 700,
+        "required_env": []
+      },
+      "peer-reviewer": {
+        "path": "frontend/peer-reviewer.md",
+        "tier": 2,
+        "primary_role": "frontend",
+        "description": "Frontend code quality and architecture review",
+        "tags": [
+          "review",
+          "quality",
+          "architecture"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 1000,
+        "required_env": []
+      },
+      "perf-optimizer": {
+        "path": "frontend/perf-optimizer.md",
+        "tier": 2,
+        "primary_role": "frontend",
+        "description": "Performance profiling across 6 dimensions with budget enforcement",
+        "tags": [
+          "performance",
+          "profiling",
+          "optimization"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 1500,
+        "required_env": []
+      },
+      "platform-qa": {
+        "path": "frontend/platform-qa.md",
+        "tier": 2,
+        "primary_role": "frontend",
+        "description": "Cross-platform QA coordination and testing",
+        "tags": [
+          "qa",
+          "testing",
+          "cross-platform"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 800,
+        "required_env": []
+      },
+      "rn-dev": {
+        "path": "frontend/rn-dev.md",
+        "tier": 2,
+        "primary_role": "frontend",
+        "description": "React Native TypeScript implementation specialist",
+        "tags": [
+          "react-native",
+          "typescript",
+          "implementation"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 700,
+        "required_env": []
+      },
+      "scaffolding-agent": {
+        "path": "frontend/scaffolding-agent.md",
+        "tier": 2,
+        "primary_role": "frontend",
+        "description": "Module generation, boilerplate creation, task sizing",
+        "tags": [
+          "scaffolding",
+          "generation",
+          "sizing"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 500,
+        "required_env": []
+      },
+      "security-agent": {
+        "path": "frontend/security-agent.md",
+        "tier": 2,
+        "primary_role": "frontend",
+        "description": "Security validation: secrets, data protection, AppSec, crash prevention",
+        "tags": [
+          "security",
+          "validation",
+          "appsec"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 2000,
+        "required_env": []
+      }
+    },
+    "qa": {
+      "requirement-analysis-agent": {
+        "path": "qa/requirement-analysis-agent.md",
+        "tier": 2,
+        "primary_role": "qa",
+        "description": "Parse ADO tickets and Figma specs to extract testable requirements",
+        "tags": [
+          "requirements",
+          "analysis",
+          "qa"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 2000,
+        "required_env": [
+          "ADO_PAT"
+        ]
+      },
+      "risk-analysis-agent": {
+        "path": "qa/risk-analysis-agent.md",
+        "tier": 2,
+        "primary_role": "qa",
+        "description": "Assess module risk to drive test scope decisions",
+        "tags": [
+          "risk",
+          "testing",
+          "qa"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 1500,
+        "required_env": []
+      },
+      "test-environment-agent": {
+        "path": "qa/test-environment-agent.md",
+        "tier": 3,
+        "primary_role": "qa",
+        "description": "Validate test infrastructure before execution",
+        "tags": [
+          "infrastructure",
+          "validation",
+          "qa"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 300,
+        "required_env": []
+      },
+      "release-signoff-agent": {
+        "path": "qa/release-signoff-agent.md",
+        "tier": 3,
+        "primary_role": "qa",
+        "description": "Aggregate test results and produce Go/No-Go report",
+        "tags": [
+          "release",
+          "gating",
+          "qa"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 3000,
+        "required_env": [
+          "ADO_PAT"
+        ]
+      },
+      "analysis-agent": {
+        "path": "qa/analysis-agent.md",
+        "tier": 2,
+        "primary_role": "qa",
+        "description": "Requirement validation and risk assessment (merged req-analysis + risk-analysis)",
+        "tags": [
+          "analysis",
+          "requirements",
+          "risk"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 1500,
+        "required_env": []
+      },
+      "defect-agent": {
+        "path": "qa/defect-agent.md",
+        "tier": 2,
+        "primary_role": "qa",
+        "description": "Bug triage P0-P3, root cause classification, ADO defect filing",
+        "tags": [
+          "defects",
+          "triage",
+          "ado"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 1000,
+        "required_env": []
+      },
+      "qa-engineer": {
+        "path": "qa/qa-engineer.md",
+        "tier": 2,
+        "primary_role": "qa",
+        "description": "Main QA persona: test coordination across all categories",
+        "tags": [
+          "qa",
+          "coordination",
+          "testing"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 1500,
+        "required_env": []
+      },
+      "qa-ops-agent": {
+        "path": "qa/qa-ops-agent.md",
+        "tier": 2,
+        "primary_role": "qa",
+        "description": "Report analysis, pipeline tracking, ADO sync, test metrics",
+        "tags": [
+          "reporting",
+          "pipeline",
+          "metrics"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 1000,
+        "required_env": []
+      },
+      "test-builder-agent": {
+        "path": "qa/test-builder-agent.md",
+        "tier": 2,
+        "primary_role": "qa",
+        "description": "Test case design with AI Self-Review, Appium/TestNG automation",
+        "tags": [
+          "test-design",
+          "automation",
+          "appium"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 1500,
+        "required_env": []
+      },
+      "test-runner-agent": {
+        "path": "qa/test-runner-agent.md",
+        "tier": 2,
+        "primary_role": "qa",
+        "description": "Test execution, environment setup, results reporting",
+        "tags": [
+          "execution",
+          "environment",
+          "reporting"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 1000,
+        "required_env": []
+      }
+    },
+    "performance": {
+      "perf-analyst": {
+        "path": "performance/perf-analyst.md",
+        "tier": 2,
+        "primary_role": "performance",
+        "description": "Compare test results against SLA baselines",
+        "tags": [
+          "performance",
+          "analysis",
+          "sla"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 2000,
+        "required_env": []
+      },
+      "perf-reporter": {
+        "path": "performance/perf-reporter.md",
+        "tier": 3,
+        "primary_role": "performance",
+        "description": "Generate performance test reports and advisory",
+        "tags": [
+          "performance",
+          "reporting",
+          "analysis"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 3000,
+        "required_env": [
+          "ADO_PAT"
+        ]
+      },
+      "perf-architect": {
+        "path": "performance/perf-architect.md",
+        "tier": 2,
+        "primary_role": "performance",
+        "description": "Performance architecture decisions and SLA definition",
+        "tags": [
+          "performance",
+          "architecture",
+          "sla"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 1000,
+        "required_env": []
+      },
+      "perf-engineer": {
+        "path": "performance/perf-engineer.md",
+        "tier": 2,
+        "primary_role": "performance",
+        "description": "JMeter test creation, load profile design, execution",
+        "tags": [
+          "jmeter",
+          "load-testing",
+          "execution"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 1500,
+        "required_env": []
+      }
+    },
+    "ui": {},
+    "tpm": {},
+    "shared": {
+      "rpi-coordinator": {
+        "path": "shared/rpi-coordinator.md",
+        "tier": 1,
+        "primary_role": "shared",
+        "description": "Orchestrate Research-Plan-Implement-Verify lifecycle",
+        "tags": [
+          "rpi",
+          "workflow",
+          "coordination"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 500,
+        "required_env": []
+      },
+      "compliance-auditor": {
+        "path": "shared/compliance-auditor.md",
+        "tier": 3,
+        "primary_role": "shared",
+        "description": "Validate security and compliance before release",
+        "tags": [
+          "compliance",
+          "security",
+          "gating"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 1500,
+        "required_env": [
+          "ADO_PAT"
+        ]
+      },
+      "release-manager-agent": {
+        "path": "shared/release-manager-agent.md",
+        "tier": 3,
+        "primary_role": "shared",
+        "description": "Orchestrate release process from staging to production",
+        "tags": [
+          "release",
+          "deployment",
+          "coordination"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 2000,
+        "required_env": [
+          "ADO_PAT"
+        ]
+      },
+      "report-agent": {
+        "path": "boss/report-agent.md",
+        "tier": 2,
+        "primary_role": "boss",
+        "description": "Executive reporting: sprint health, quality metrics, risk dashboard",
+        "tags": [
+          "reporting",
+          "executive",
+          "metrics"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 1000,
+        "required_env": []
+      },
+      "architect-agent": {
+        "path": "shared/architect-agent.md",
+        "tier": 2,
+        "primary_role": "shared",
+        "description": "System design, ADR creation, design documentation",
+        "tags": [
+          "architecture",
+          "adr",
+          "design"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 2000,
+        "required_env": []
+      },
+      "em-agent": {
+        "path": "shared/em-agent.md",
+        "tier": 2,
+        "primary_role": "shared",
+        "description": "Engineering Manager: team velocity tracking, capacity planning",
+        "tags": [
+          "management",
+          "velocity",
+          "planning"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 800,
+        "required_env": []
+      },
+      "gate-matrix": {
+        "path": "shared/gate-matrix.md",
+        "tier": 2,
+        "primary_role": "shared",
+        "description": "Gate requirement matrix and validation criteria reference",
+        "tags": [
+          "gates",
+          "validation",
+          "reference"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 300,
+        "required_env": []
+      },
+      "master-code-reviewer": {
+        "path": "shared/master-code-reviewer.md",
+        "tier": 2,
+        "primary_role": "shared",
+        "description": "PR validation against platform guidelines, 6-dimension review",
+        "tags": [
+          "code-review",
+          "pr-validation",
+          "quality"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 2000,
+        "required_env": []
+      },
+      "pipeline-flow": {
+        "path": "shared/pipeline-flow.md",
+        "tier": 2,
+        "primary_role": "shared",
+        "description": "SDLC pipeline stage sequencing and dependency tracking",
+        "tags": [
+          "pipeline",
+          "stages",
+          "dependencies"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 500,
+        "required_env": []
+      },
+      "pm-agent": {
+        "path": "shared/pm-agent.md",
+        "tier": 2,
+        "primary_role": "shared",
+        "description": "Product Manager: PRD review, story creation, release decisions",
+        "tags": [
+          "product",
+          "prd",
+          "stories"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 1500,
+        "required_env": []
+      },
+      "qa-agent": {
+        "path": "shared/qa-agent.md",
+        "tier": 2,
+        "primary_role": "shared",
+        "description": "Shared QA validation for cross-team testing coordination",
+        "tags": [
+          "qa",
+          "validation",
+          "cross-team"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 1000,
+        "required_env": []
+      },
+      "tech-lead-agent": {
+        "path": "shared/tech-lead-agent.md",
+        "tier": 2,
+        "primary_role": "shared",
+        "description": "Technical leadership: design reviews, standards enforcement",
+        "tags": [
+          "tech-lead",
+          "reviews",
+          "standards"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 1500,
+        "required_env": []
+      },
+      "tpm-agent": {
+        "path": "shared/tpm-agent.md",
+        "tier": 2,
+        "primary_role": "shared",
+        "description": "TPM coordination: cross-team dependencies, timeline tracking",
+        "tags": [
+          "tpm",
+          "coordination",
+          "dependencies"
+        ],
+        "accepts_roles": [
+          "*"
+        ],
+        "output_cost_tokens": 800,
+        "required_env": []
+      }
+    }
+  },
+  "discovery_commands": {
+    "list_all": "sdlc agent list",
+    "list_by_role": "sdlc agent list --role=<role>",
+    "list_by_tier": "sdlc agent list --tier=1",
+    "show_agent": "sdlc agent show <agent-id>",
+    "invoke_agent": "sdlc agent invoke <agent-id> --role=<role> --stage=<stage> [--ado-id=<id>]"
+  },
+  "total_agents": 56,
+  "total_tier_1": 5,
+  "total_tier_2": 40,
+  "total_tier_3": 8
+}

@@ -1,0 +1,198 @@
+stage: 08-implementation
+name: Implementation
+version: 2.0.0
+description: Developers implement tasks using RPI loop (composed from atomic skills)
+
+# Legacy fallback - both files work
+fallback: stages/08-implementation/STAGE.md
+
+metadata:
+  phase: 4
+  requires_stages: ["07-task-breakdown"]
+  gate: Multiple (per RPI step)
+  model: sonnet-4-6
+  token_budget:
+    input: 6000
+    output: 4000
+
+context:
+  required:
+    - story_id
+    - role
+    - stack
+  optional:
+    - max_files: 10
+    
+# Use composed RPI workflow
+workflow:
+  type: rpi  # Research → Plan → Implement
+  steps:
+    research:
+      skill: rpi-research
+      composition: skills/composed/rpi-research.yaml
+      gate:
+        description: Review research findings
+        prompt: |
+          Research complete for story {context.story_id}.
+          
+          Files identified: {outputs.research.files_identified}
+          Risks found: {outputs.research.risks_found}
+          
+          Proceed to planning?
+        channels:
+          - cli
+          - ado_comment
+        pattern: "approve|proceed|yes|LGTM"
+      output: research.md
+      
+    plan:
+      skill: rpi-plan
+      composition: skills/composed/rpi-plan.yaml
+      requires: [research]
+      gate:
+        description: Review implementation plan
+        prompt: |
+          Plan complete.
+          
+          Files to modify: {outputs.plan.files_to_modify | length}
+          Tests to add: {outputs.plan.tests_to_add | length}
+          
+          Approve plan?
+        channels:
+          - cli
+          - ado_comment
+        pattern: "approve|LGTM|proceed"
+      output: plan.md
+      
+    implement:
+      skill: rpi-implement
+      composition: skills/composed/rpi-implement.yaml
+      requires: [plan]
+      gate:
+        description: Review implementation
+        prompt: |
+          Implementation complete.
+          
+          Files modified: {outputs.implement.files_modified | length}
+          Lines changed: {outputs.implement.lines_changed}
+          
+          Commit changes?
+        channels:
+          - cli
+          - ado_comment
+        pattern: "commit|approve|yes"
+      output: commit_hash
+
+# Stage-specific gates
+stages_gates:
+  - id: research-gate
+    description: Human approval of research findings
+    required: true
+    channels: [cli, ado_comment]
+    
+  - id: plan-gate
+    description: Human approval of implementation plan
+    required: true
+    channels: [cli, ado_comment]
+    
+  - id: implement-gate
+    description: Human approval of code changes
+    required: true
+    channels: [cli, ado_comment]
+
+# ADO integration
+ado:
+  on_stage_start:
+    - action: add_comment
+      text: "🚀 **AI-SDLC**: Starting implementation stage for {context.story_id}"
+    - action: add_tags
+      tags: ["impl:started"]
+      
+  on_research_complete:
+    - action: add_comment
+      text: |
+        **Research Complete**
+        
+        Files identified: {outputs.research.files_identified}
+        Risk assessment: {outputs.research.overall_risk_score}/1.0
+        
+        Waiting for approval to proceed.
+    - action: add_tags
+      tags: ["impl:research-complete"]
+      
+  on_research_approved:
+    - action: add_comment
+      text: "✅ Research approved. Proceeding to planning."
+    - action: add_tags
+      tags: ["impl:research-approved", "impl:planning"]
+      
+  on_plan_complete:
+    - action: add_comment
+      text: |
+        **Planning Complete**
+        
+        Files to modify: {outputs.plan.files_to_modify | length}
+        Tests planned: {outputs.plan.tests_to_add | length}
+        
+        Plan: `.sdlc/rpi/{context.story_id}/plan.md`
+        
+        Waiting for approval.
+    - action: add_tags
+      tags: ["impl:plan-complete"]
+      
+  on_plan_approved:
+    - action: add_comment
+      text: "✅ Plan approved. Beginning implementation."
+    - action: add_tags
+      tags: ["impl:plan-approved", "impl:coding"]
+      
+  on_implement_complete:
+    - action: add_comment
+      text: |
+        **Implementation Complete**
+        
+        Commit: {outputs.implement.commit_hash}
+        Files: {outputs.implement.files_modified | length}
+        
+        Ready for code review.
+    - action: add_tags
+      tags: ["impl:complete", "ready:code-review"]
+    - action: update_state
+      state: "Code Complete"
+      
+  on_gate_rejected:
+    - action: add_comment
+      text: "❌ Gate rejected. Workflow paused. Reason: {gate.reason}"
+    - action: add_tags
+      tags: ["impl:paused", "blocked:{gate.id}"]
+
+# Error handling
+error_handling:
+  on_skill_failure:
+    action: fallback_to_monolithic
+    log: true
+    notify_ado: true
+    
+  on_gate_timeout:
+    timeout: 24h
+    action: escalate
+    notify: [tech-lead, product-owner]
+    ado_comment: "⏰ **AI-SDLC**: Gate approval pending for 24h. Escalating."
+    
+  on_ado_sync_failure:
+    action: queue_for_retry
+    max_retries: 3
+    log_locally: true
+
+# Performance optimization
+optimization:
+  cache_composition: true
+  parallel_step_execution: false  # RPI is sequential
+  pre_load_context: [".sdlc/module/"]
+  
+# Metrics
+metrics:
+  track_tokens: true
+  track_duration: true
+  track_cache_hits: true
+  log_to: ".sdlc/metrics/08-implementation.jsonl"

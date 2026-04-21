@@ -1,0 +1,37 @@
+# NOTE: Stage names in this workflow (e.g., "implementation") are mapped by the CLI to
+# phase-numbered directory names (e.g., "08-implementation") via stage name resolution logic.
+# The CLI automatically prepends the phase number when looking up stage directories.
+name: quick-fix
+description: Fast-track workflow for hotfixes and urgent bugs, skipping design and optional testing
+default_role: backend
+
+stages:
+  - name: implementation
+    required: true
+    description: Code implementation for hotfix
+
+  - name: code-review
+    required: true
+    description: Review code for correctness and security (expedited)
+
+  - name: test-design
+    required: false
+    description: Design test cases for regression prevention
+    skip_if: severity != 'P0'
+
+  - name: test-execution
+    required: false
+    description: Execute tests to verify hotfix
+    skip_if: severity == 'P2' or severity == 'P3'
+
+  - name: commit-push
+    required: true
+    description: Commit changes, push to repo, trigger CI/CD pipeline
+
+  - name: documentation
+    required: false
+    description: Document hotfix in ADR or runbook
+
+  - name: summary-close
+    required: false
+    description: Summarize work completed, close work item

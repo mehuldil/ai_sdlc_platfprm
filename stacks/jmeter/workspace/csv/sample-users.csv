@@ -1,0 +1,16 @@
+userId,deviceKey,emailId,password,authKey,shardKey,rootFolderKey
+user001,dk-001,user001@test.com,Test@123,base64token001,shard-1,rf-001
+user002,dk-002,user002@test.com,Test@123,base64token002,shard-1,rf-002
+user003,dk-003,user003@test.com,Test@123,base64token003,shard-2,rf-003
+user004,dk-004,user004@test.com,Test@123,base64token004,shard-2,rf-004
+user005,dk-005,user005@test.com,Test@123,base64token005,shard-3,rf-005
+user006,dk-006,user006@test.com,Test@123,base64token006,shard-3,rf-006
+user007,dk-007,user007@test.com,Test@123,base64token007,shard-4,rf-007
+user008,dk-008,user008@test.com,Test@123,base64token008,shard-4,rf-008
+user009,dk-009,user009@test.com,Test@123,base64token009,shard-5,rf-009
+user010,dk-010,user010@test.com,Test@123,base64token010,shard-5,rf-010
+user011,dk-011,user011@test.com,Test@123,base64token011,shard-1,rf-011
+user012,dk-012,user012@test.com,Test@123,base64token012,shard-1,rf-012
+user013,dk-013,user013@test.com,Test@123,base64token013,shard-2,rf-013
+user014,dk-014,user014@test.com,Test@123,base64token014,shard-2,rf-014
+user015,dk-015,user015@test.com,Test@123,base64token015,shard-3,rf-015

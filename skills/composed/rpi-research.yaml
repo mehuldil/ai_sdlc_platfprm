@@ -1,0 +1,173 @@
+name: rpi-research
+version: 2.0.0
+description: Research and requirements analysis phase of RPI workflow (composed from atomic skills)
+category: rpi
+universal: true
+model: sonnet-4-6
+token_budget:
+  input: 6000
+  output: 4000
+
+# Fallback to monolithic if composition fails
+fallback: skills/rpi-research.md
+
+# Context needed for all steps
+context:
+  required:
+    - story_id
+  optional:
+    - max_files: 10
+    - max_chars_per_file: 2000
+
+# Atomic skill composition
+composition:
+  - id: step-1-fetch
+    name: Fetch ADO Work Item
+    skill: ado-fetch
+    description: Get story details from Azure DevOps
+    input:
+      story_id: "$context.story_id"
+    output: work_item
+    on_error: retry_once
+    
+  - id: step-2-search
+    name: Search Codebase
+    skill: codebase-search
+    description: Find relevant files based on story keywords
+    input:
+      keywords:
+        - "$work_item.title"
+        - "$work_item.description"
+      max_files: "$context.max_files"
+    output: relevant_files
+    depends_on:
+      - step-1-fetch
+    on_error: continue_with_warning
+    
+  - id: step-3-extract
+    name: Extract File Content
+    skill: file-extract
+    description: Read file excerpts for context
+    input:
+      files: "$relevant_files.files[].path"
+      max_chars_per_file: "$context.max_chars_per_file"
+      strategy: smart
+    output: file_contents
+    depends_on:
+      - step-2-search
+    on_error: skip_failed_files
+    
+  - id: step-4-wiki
+    name: Lookup Wiki Documentation
+    skill: wiki-lookup
+    description: Search for architecture and constraint docs
+    input:
+      search_terms: "$work_item.tags"
+      categories: ["architecture", "api", "constraints", "contracts"]
+    output: wiki_results
+    optional: true
+    on_error: continue_with_warning
+    
+  - id: step-5-risks
+    name: Identify Risks
+    skill: risk-identify
+    description: Analyze risks based on work item and files
+    input:
+      work_item: "$work_item"
+      files: "$relevant_files.files"
+      known_issues: ".sdlc/module/knowledge/known-issues.md"
+    output: risk_analysis
+    depends_on:
+      - step-1-fetch
+      - step-2-search
+    on_error: continue_with_warning
+    
+  - id: step-6-generate
+    name: Generate Research Document
+    skill: doc-generate
+    description: Compose research.md from all gathered data
+    template: research-output.md
+    input:
+      work_item: "$work_item"
+      relevant_files: "$relevant_files"
+      file_contents: "$file_contents"
+      wiki_results: "$wiki_results"
+      risk_analysis: "$risk_analysis"
+    output:
+      file: ".sdlc/rpi/{context.story_id}/research.md"
+      format: markdown
+    depends_on:
+      - step-3-extract
+      - step-5-risks
+
+# Gate checkpoint after research
+gate:
+  id: research-gate
+  description: Review research findings before proceeding
+  prompt: |
+    Research complete for {work_item.title}.
+    
+    Files identified: {relevant_files.total_matches}
+    Risks found: {risk_analysis.risks | length}
+    
+    Proceed to planning?
+  options:
+    - id: approve
+      label: Approve - Proceed to planning
+      action: create_marker_file
+      marker: ".approved-research"
+    - id: refine
+      label: Refine - Need more research
+      action: loop_back
+      loop_to: step-2-search
+    - id: reject
+      label: Reject - Stop workflow
+      action: exit
+      exit_code: 1
+
+# ADO integration
+ado_actions:
+  on_complete:
+    - action: add_comment
+      work_item_id: "$context.story_id"
+      text: |
+        **Research Complete**
+        
+        Files analyzed: {relevant_files.total_matches}
+        Risk assessment: {risk_analysis.overall_risk_score}/1.0
+        
+        Research document: `.sdlc/rpi/{context.story_id}/research.md`
+        
+        Waiting for approval to proceed to planning phase.
+    - action: add_tags
+      tags: ["rpi:research-complete"]
+  
+  on_approval:
+    - action: add_comment
+      text: "✅ Research approved. Proceeding to planning phase."
+    - action: add_tags
+      tags: ["rpi:research-approved"]
+  
+  on_rejection:
+    - action: add_comment
+      text: "❌ Research rejected. Workflow stopped."
+    - action: update_state
+      state: "Blocked"
+
+# Performance optimization
+caching:
+  strategy: per_step
+  steps:
+    - step-1-fetch:
+        ttl: 300  # 5 minutes
+        invalidate_on: ["story_update"]
+    - step-2-search:
+        ttl: 3600  # 1 hour
+        invalidate_on: ["git_head"]
+
+# Cost tracking
+cost_tracking:
+  enabled: true
+  budget_limit: 10000  # tokens
+  alert_at: 8000
+  log_to: ".sdlc/tokens/rpi-research.jsonl"

@@ -1,0 +1,52 @@
+# QA Runtime Orchestration Engine Dependencies
+
+# Core framework
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+
+# Workflow orchestration
+langgraph==0.0.38
+langchain==0.1.0
+
+# Redis
+redis==5.0.1
+
+# Claude AI
+anthropic==0.7.1
+
+# Azure DevOps
+requests==2.31.0
+
+# HTTP client
+httpx==0.25.2
+
+# JSON and data handling
+pydantic==2.5.0
+
+# Testing
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
+
+# Async support
+aiofiles==23.2.1
+
+# Excel generation
+openpyxl==3.10.10
+
+# Logging and monitoring
+python-json-logger==2.0.7
+
+# Development
+black==23.12.0
+flake8==6.1.0
+mypy==1.7.1
+
+# Appium testing
+Appium-Python-Client==3.1.0
+
+# Android SDK utilities
+adb==1.3.0
+
+# XML parsing (for Surefire results)
+lxml==4.9.3

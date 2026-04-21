@@ -1,0 +1,48 @@
+# NOTE: Stage names in this workflow (e.g., "system-design") are mapped by the CLI to
+# phase-numbered directory names (e.g., "05-system-design") via stage name resolution logic.
+# The CLI automatically prepends the phase number when looking up stage directories.
+name: dev-cycle
+description: Developer workflow for feature implementation with design, coding, testing, and release
+default_role: backend
+
+stages:
+  - name: system-design
+    required: true
+    description: Architecture decisions, API contracts, database schema design
+
+  - name: design-review
+    required: false
+    description: Verify Figma mockups match implementation, pixel-perfect validation
+    skip_if: work_item_type == 'Task' or work_item_type == 'Bug'
+
+  - name: task-breakdown
+    required: false
+    description: Break down stories into implementation tasks for developers
+
+  - name: implementation
+    required: true
+    description: Code implementation in appropriate language/framework
+
+  - name: code-review
+    required: true
+    description: Review code for correctness, performance, security, testability
+
+  - name: test-design
+    required: true
+    description: Analyze requirements, design test cases, identify risk areas
+
+  - name: test-execution
+    required: true
+    description: Execute tests, run automation suite, analyze failures
+
+  - name: commit-push
+    required: true
+    description: Commit changes, push to repo, trigger CI/CD pipeline
+
+  - name: documentation
+    required: false
+    description: Write ADRs, runbooks, API documentation
+
+  - name: summary-close
+    required: false
+    description: Summarize work completed, close work item, update memory

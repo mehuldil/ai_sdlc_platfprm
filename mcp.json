@@ -1,0 +1,38 @@
+{
+  "mcpServers": {
+    "AzureDevOps": {
+      "command": "bash",
+      "args": [
+        "env/mcp-start.sh",
+        "npx",
+        "-y",
+        "@azure-devops/mcp",
+        "your-ado-org",
+        "-a",
+        "envvar"
+      ]
+    },
+    "wikijs": {
+      "command": "bash",
+      "args": [
+        "env/mcp-start.sh",
+        "npx",
+        "-y",
+        "wikijs-mcp"
+      ],
+      "env": {
+        "WIKIJS_URL": "https://wiki.jcinternal.com",
+        "NODE_TLS_REJECT_UNAUTHORIZED": "0"
+      }
+    },
+    "elasticsearch": {
+      "command": "bash",
+      "args": [
+        "env/mcp-start.sh",
+        "npx",
+        "-y",
+        "@elastic/mcp-server-elasticsearch"
+      ]
+    }
+  }
+}

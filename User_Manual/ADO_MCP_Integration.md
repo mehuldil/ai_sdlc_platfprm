@@ -1,0 +1,136 @@
+# ADO & MCP Integration
+
+## Azure DevOps Integration
+
+### Two Modes
+
+| Mode | Interface | How It Works |
+|------|-----------|-------------|
+| MCP Mode | IDE (Cursor, Claude Code) | `mcp.json` → `@azure-devops/mcp` → ADO API |
+| CLI Mode | Terminal | `sdlc ado` → `curl` → ADO REST API v7.0 |
+| **Observer Mode** (v2.1.1) | Background | ADO → Webhook/Polling → Platform triggers (with idempotent dedup) |
+
+Both use the same credentials from `env/.env`.
+
+### Setup
+
+```bash
+# In env/.env
+ADO_ORG=your-organization
+ADO_PROJECT=your-project
+ADO_PAT=your-personal-access-token
+```
+
+**Get ADO PAT:** `https://dev.azure.com/{ORG}/_usersSettings/tokens`
+- Scopes: "Work Items (Read & Write)"
+
+### ADO Work Item Tagging
+
+| Tag Type | Examples |
+|----------|---------|
+| Status | `prd:reviewed`, `techdesign:reviewed`, `release:reviewed` |
+| Blocking | `blocked:prd-review`, `blocked:design` |
+| Type | `story:product`, `story:backend`, `story:frontend` |
+| Quality | `analytics:required`, `adr:required` |
+| AI | `claude:generated` |
+| **RPI (v2.1.1)** | `rpi:research-complete`, `rpi:research-approved`, `rpi:plan-complete` |
+
+### ADO State Machine
+
+```
+New → Approved → Committed → In Progress → Done
+                    ↓
+                 Blocked → Closed (Done or Won't Do)
+```
+
+### Auto-Linking on Merge
+
+When branches merge, auto-posts to ADO work item:
+- Branch merged + timestamp
+- All ADR decisions combined
+- Engineers involved across branches
+- Links to git decision logs
+
+**Non-blocking:** Merge succeeds even if ADO is unreachable.
+
+### Offline / connectivity (acceptable behavior)
+
+**Preferred posture:** Work continues locally; ADO sync is **best-effort** and **eventually consistent**.
+
+| Situation | Behavior |
+|-----------|----------|
+| ADO API unreachable | Commits and merges still succeed; queue ADO updates for when online |
+| MCP disconnected | Use **`sdlc ado`** (CLI + REST) when the network returns |
+| Drift risk | Reconcile with **`sdlc ado`** queries + work item comments; optional scheduled job in your org |
+| **Observer offline** (v2.1.1) | Workflow gates wait for CLI approval; queue comment-based triggers |
+
+**Not guaranteed in offline mode:** real-time two-way sync, immediate parent/child link visibility, or zero drift until reconciliation runs.
+
+## ADO Observer System (v2.1.1)
+
+### What Is the ADO Observer?
+
+The ADO Observer enables **2-way synchronization** between Azure DevOps and the AI-SDLC Platform:
+
+- **Reactive** (existing): Platform pushes to ADO via CLI or MCP
+- **Observable** (new): ADO changes trigger platform actions via webhook or polling
+
+Implementation: [`orchestrator/ado-observer/observer.py`](../orchestrator/ado-observer/observer.py).
+
+### How It Works
+
+Two entry paths feed the same handler:
+
+| Path | Trigger | Used for |
+|------|---------|----------|
+| **Webhook** | ADO posts an event (work item updated, comment added, state changed) | Real-time, preferred |
+| **Polling** | Observer polls ADO REST at interval | Fallback when webhook is unreachable |
+
+Both paths flow through `_process_work_item` which applies the same dedup + stage-mapping logic.
+
+### Event → stage mapping
+
+`EVENT_STAGE_MAP` in `observer.py` maps state transitions to SDLC stage ids. Wildcard `*` supported on either side.
+
+```python
+# example entries (fill in after ADO schema finalized)
+EVENT_STAGE_MAP = {
+    "new:active":       "02-pre-grooming",
+    "active:resolved":  "09-code-review",
+    "*:done":           "15-close",
+}
+```
+
+Helper: `resolve_stage_for_transition(from_state, to_state)` tries exact match first, then `from:*`, then `*:to`.
+
+**Status (v2.1.1):** shipped as a stub with `TODO(mehul)` entries. Fill real transitions during operational rollout; observer runs without error on empty map (no-op).
+
+### Idempotency (v2.1.1)
+
+Both paths are idempotent via an in-memory cache:
+
+| Cache key | Source | TTL |
+|-----------|--------|-----|
+| `work_item_id + rev + event_type` | Polling & webhook fallback | 1 hour |
+| ADO `eventId` | Webhook (when present) | 1 hour |
+
+Duplicate events within the TTL are dropped with a log line — no downstream handlers fire twice. The cache self-prunes expired keys on each call (`_is_duplicate_event`).
+
+This closes the "observer re-fires on polling after webhook already delivered" hole seen in pre-v2.1.1 deployments.
+
+### Run modes
+
+```bash
+# Webhook mode (default)
+python3 orchestrator/ado-observer/observer.py --mode=webhook --port=8080
+
+# Polling mode (fallback)
+python3 orchestrator/ado-observer/observer.py --mode=polling --interval=60
+
+# Both (recommended for production)
+python3 orchestrator/ado-observer/observer.py --mode=both --port=8080 --interval=300
+```
+
+### Gate bypass and ADO comments
+
+Per [Enforcement_Contract](Enforcement_Contract.md) and `rules/gate-enforcement-ide.md`, any bypass of a hard gate (e.g., unit-test enforcement, mirror drift) must be recorded as a **comment on the ADO work item**. The observer treats gate-bypass comments as first-class events and records them for audit.

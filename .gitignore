@@ -1,0 +1,223 @@
+# ============================================================================
+# AI-SDLC Platform .gitignore
+# Comprehensive security and environment hardening
+# ============================================================================
+
+# Bash neutralize temp files (should never be committed)
+*.neutral.*
+
+# ── Secrets & Environment ─────────────────────────────────────────────────
+# Never commit actual .env files
+env/.env
+env/.env.local
+plugins/ide-plugin/env/.env
+env/.env.production
+env/.env.staging
+
+# Safe to commit: templates and examples
+!env/.env.example
+!env/env.template
+
+# Token usage logs
+env/.token-usage.log
+env/.last-ado-create.json
+# Local CLI stderr / debug captures (e.g. redirected `sdlc ado show` output)
+env/*-err.txt
+*.log
+logs/
+
+# ── Sensitive Configuration ────────────────────────────────────────────────
+# Local SDLC state
+.sdlc/config
+
+# MCP configuration (linked to platform)
+.mcp.json
+
+# API keys and credentials (if ever accidentally created)
+**/secrets/
+**/.secrets
+*.key
+*.pem
+*.p8
+*.crt
+.env.*.local
+
+# ── IDE & Editor Settings ──────────────────────────────────────────────────
+# IntelliJ / JetBrains
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# VS Code
+.vscode/
+.vscode/settings.json
+.vscode/launch.json
+*.code-workspace
+
+# Vim / Neovim
+*.swp
+*.swo
+*~
+.vim/
+.netrwhist
+
+# Sublime Text
+*.sublime-workspace
+*.sublime-project
+
+# Emacs
+*~
+\#*\#
+.\#*
+
+# ── OS Files ──────────────────────────────────────────────────────────────
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+.directory
+
+# ── Package Managers ──────────────────────────────────────────────────────
+# Node.js
+node_modules/
+package-lock.json
+yarn.lock
+npm-debug.log
+npm-error.log
+pnpm-lock.yaml
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.venv/
+venv/
+env/venv
+pip-log.txt
+
+# Ruby
+Gemfile.lock
+
+# Go
+vendor/
+go.sum
+
+# ── Build Artifacts ────────────────────────────────────────────────────────
+build/
+dist/
+out/
+*.o
+*.a
+*.so
+*.dylib
+*.exe
+*.out
+
+# ── Temporary Files ────────────────────────────────────────────────────────
+*.tmp
+*.bak
+*.backup
+*.swp
+*.swo
+*~
+.tmp/
+tmp/
+temp/
+*.cache
+
+# Docker build artifacts
+*.tar
+*.tar.gz
+*.zip
+
+# ── Local Project State ────────────────────────────────────────────────────
+# Project workflow state (regenerated at setup)
+workflow-state.md.local
+.sdlc/config
+.sdlc/state
+
+# ── Coverage & Testing ────────────────────────────────────────────────────
+coverage/
+.nyc_output/
+.coverage
+htmlcov/
+*.lcov
+
+# ── Platform-Specific ────────────────────────────────────────────────────
+# Do not commit platform symlinks (regenerated per project)
+.claude/
+.cursor/
+
+# Project memory (auto-synced)
+.sdlc/memory/ (in .sdlc which is already ignored)
+
+# ── Analytics & Monitoring ────────────────────────────────────────────────
+# Token usage tracking
+env/.token-usage.log
+*.log
+
+# Error logs
+error.log
+stderr.log
+
+# ── Optional: Commit-friendly patterns ────────────────────────────────────
+# If you want to track specific example files:
+# !.env.example
+# !.env.template
+# !env/.env.example
+# !env/env.template
+
+# ── Emergency: Things to ALWAYS ignore ─────────────────────────────────────
+# Credentials (any format)
+**/credentials.json
+**/secrets.json
+**/config.prod.json
+**/.credentials
+
+# Private keys (any format)
+**/*.pem
+**/*.key
+**/*.pkcs8
+
+# API tokens
+**/token*
+**/auth*
+**/jwt*
+
+# Database files (local dev)
+*.db
+*.sqlite
+*.sqlite3
+
+#
+.sdlc/state.json
+plugins/ide-plugin/node_modules/
+
+# SDLC Platform
+env/.env
+env/.env.local
+.mcp.json
+.token-usage.log
+.sdlc/rpi/*/research.md
+.sdlc/rpi/*/plan.md
+.gate-audit.log
+
+# SDLC granular rules (tracked: module KB, semantic-memory-team.jsonl, memory/*.md)
+.sdlc/config/
+.sdlc/state.json
+.sdlc/logs/
+.sdlc/**/*.sqlite3
+.sdlc/**/*.sqlite3-journal

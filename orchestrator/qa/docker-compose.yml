@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  # Redis Knowledge Base Store
+  redis:
+    image: redis:7-alpine
+    container_name: qa-orchestrator-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - qa-network
+
+  # QA Orchestrator API
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: qa-orchestrator-api
+    ports:
+      - "8000:8000"
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+      - API_DEBUG=false
+      - LOG_LEVEL=INFO
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - ADO_ORG=${ADO_ORG}
+      - ADO_PROJECT=${ADO_PROJECT}
+      - ADO_PAT=${ADO_PAT}
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - qa-network
+    volumes:
+      - ./data:/app/data
+
+volumes:
+  redis_data:
+
+networks:
+  qa-network:
+    driver: bridge

@@ -1,0 +1,78 @@
+# NOTE: Stage names in this workflow (e.g., "system-design") are mapped by the CLI to
+# phase-numbered directory names (e.g., "05-system-design") via stage name resolution logic.
+# The CLI automatically prepends the phase number when looking up stage directories.
+name: full-sdlc
+description: Complete SDLC workflow from requirements to release signoff with all 15 stages
+default_role: product
+
+stages:
+  - name: requirement-intake
+    required: true
+    description: Collect and refine product requirements, user stories, feature requests
+
+  - name: prd-review
+    required: true
+    description: Review and validate PRD content before grooming
+    skip_if: work_item_type == 'Task' or work_item_type == 'Bug'
+
+  - name: pre-grooming
+    required: true
+    description: Prioritize epics, identify blockers, prepare for grooming
+    skip_if: work_item_type == 'Task'
+
+  - name: grooming
+    required: true
+    description: Estimate, clarify acceptance criteria, generate stories from epic
+    skip_if: work_item_type == 'Task'
+
+  - name: system-design
+    required: true
+    description: Architecture decisions, API contracts, database schema design
+    skip_if: work_item_type == 'Bug' and severity != 'P0'
+
+  - name: design-review
+    required: false
+    description: Verify Figma mockups match implementation, pixel-perfect validation
+    skip_if: work_item_type == 'Task' or work_item_type == 'Bug'
+
+  - name: task-breakdown
+    required: false
+    description: Break down stories into implementation tasks for developers
+    skip_if: work_item_type != 'Feature' and work_item_type != 'Epic'
+
+  - name: implementation
+    required: true
+    description: Code implementation in appropriate language/framework
+
+  - name: code-review
+    required: true
+    description: Review code for correctness, performance, security, testability
+    skip_if: work_item_type == 'Documentation'
+
+  - name: test-design
+    required: true
+    description: Analyze requirements, design test cases, identify risk areas
+    skip_if: work_item_type == 'Documentation'
+
+  - name: test-execution
+    required: true
+    description: Execute tests, run automation suite, analyze failures
+    skip_if: work_item_type == 'Documentation'
+
+  - name: commit-push
+    required: true
+    description: Commit changes, push to repo, trigger CI/CD pipeline
+    skip_if: work_item_type == 'Investigation'
+
+  - name: documentation
+    required: false
+    description: Write ADRs, runbooks, API documentation, deploy guides
+
+  - name: release-signoff
+    required: true
+    description: Verify all gates passed, sign off on release readiness
+    skip_if: work_item_type == 'Task' and severity != 'P0'
+
+  - name: summary-close
+    required: false
+    description: Summarize work completed, close work item, update memory

@@ -1,0 +1,246 @@
+{
+  "schemaVersion": "1.0",
+  "name": "AI-SDLC Platform IDE Plugin",
+  "id": "ai-sdlc-platform",
+  "version": "1.0.0",
+  "description": "Complete intelligent SDLC automation in IDE chat. Supports 15-stage workflow from requirements to incident response with natural language + slash commands.",
+  "author": "Mehul Dedhia & your-ado-org",
+  "license": "Proprietary",
+  "keywords": ["sdlc", "automation", "devops", "product-management", "azure-devops"],
+  "homepage": "https://github.com/yourusername/ai-sdlc-platform",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/ai-sdlc-platform.git"
+  },
+  "capabilities": {
+    "IDE": {
+      "slash_commands": true,
+      "natural_language": true,
+      "interactive_prompts": true,
+      "memory_persistence": true
+    }
+  },
+  "skills": [
+    {
+      "name": "requirement-intake",
+      "path": "./skills/requirement-intake",
+      "description": "Capture requirements and create work items",
+      "triggers": ["requirement intake", "new feature", "create story"],
+      "commands": ["/project:requirement-intake"]
+    },
+    {
+      "name": "prd-review",
+      "path": "./skills/prd-review",
+      "description": "Review PRD for gaps and completeness",
+      "triggers": ["prd review", "gap analysis", "review requirements"],
+      "commands": ["/project:prd-review"]
+    },
+    {
+      "name": "grooming",
+      "path": "./skills/grooming",
+      "description": "Break down features into master and sprint stories",
+      "triggers": ["story breakdown", "estimate stories", "create master story"],
+      "commands": ["/project:grooming"]
+    },
+    {
+      "name": "architecture-review",
+      "path": "./skills/architecture-review",
+      "description": "Review architecture feasibility and create ADRs",
+      "triggers": ["architecture review", "technical design", "system architecture"],
+      "commands": ["/project:architecture-review"]
+    },
+    {
+      "name": "system-design",
+      "path": "./skills/system-design",
+      "description": "Design data models, APIs, and deployment strategy",
+      "triggers": ["system design", "api design", "data model"],
+      "commands": ["/project:system-design"]
+    },
+    {
+      "name": "sprint-planning",
+      "path": "./skills/sprint-planning",
+      "description": "Plan sprint with task breakdown and team assignment",
+      "triggers": ["sprint planning", "task breakdown", "estimate tasks"],
+      "commands": ["/project:sprint-planning"]
+    },
+    {
+      "name": "implementation",
+      "path": "./skills/implementation",
+      "description": "Provide development guidance and track progress",
+      "triggers": ["implementation guide", "development help", "code guidance"],
+      "commands": ["/project:implementation"]
+    },
+    {
+      "name": "code-review",
+      "path": "./skills/code-review",
+      "description": "Review code for quality, security, and standards",
+      "triggers": ["code review", "pull request review", "pr approval"],
+      "commands": ["/project:code-review"]
+    },
+    {
+      "name": "test-design",
+      "path": "./skills/test-design",
+      "description": "Design QA tests and create test cases",
+      "triggers": ["test design", "qa strategy", "test cases"],
+      "commands": ["/project:test-design"]
+    },
+    {
+      "name": "performance-testing",
+      "path": "./skills/performance-testing",
+      "description": "Run load tests and validate NFR targets",
+      "triggers": ["performance testing", "load test", "nfr validation"],
+      "commands": ["/project:performance-testing"]
+    },
+    {
+      "name": "staging-validation",
+      "path": "./skills/staging-validation",
+      "description": "Deploy to staging and collect sign-offs",
+      "triggers": ["staging validation", "sit testing", "uat approval"],
+      "commands": ["/project:staging-validation"]
+    },
+    {
+      "name": "release-prep",
+      "path": "./skills/release-prep",
+      "description": "Verify compliance and prepare release",
+      "triggers": ["release preparation", "release checklist", "go-live prep"],
+      "commands": ["/project:release-prep"]
+    },
+    {
+      "name": "deployment",
+      "path": "./skills/deployment",
+      "description": "Deploy to production with canary rollout",
+      "triggers": ["deployment", "production release", "go-live"],
+      "commands": ["/project:deployment"]
+    },
+    {
+      "name": "monitoring",
+      "path": "./skills/monitoring",
+      "description": "Setup production monitoring and alerts",
+      "triggers": ["monitoring setup", "alerts configuration", "dashboards"],
+      "commands": ["/project:monitoring"]
+    },
+    {
+      "name": "incident-response",
+      "path": "./skills/incident-response",
+      "description": "Manage incidents and create post-mortems",
+      "triggers": ["incident response", "post-mortem", "incident management"],
+      "commands": ["/project:incident-response"]
+    },
+    {
+      "name": "setup",
+      "path": "./skills/setup",
+      "description": "One-command setup: installs deps, creates env, wires commands, validates MCP",
+      "triggers": ["setup", "install", "configure", "get started", "initialize", "bootstrap"],
+      "commands": ["/project:setup"]
+    }
+  ],
+  "agents": [
+    {
+      "name": "orchestrator-agent",
+      "path": "./agents/orchestrator-agent.md",
+      "description": "Intelligent workflow orchestrator for multi-stage SDLC automation",
+      "triggers": ["run workflow", "execute pipeline", "automated flow"],
+      "capabilities": ["progress-tracking", "checkpoint-resumption", "parallel-execution"]
+    },
+    {
+      "name": "nl-processor",
+      "path": "./skills/nl-processor",
+      "description": "Natural language command processor with pattern matching",
+      "triggers": ["every chat message"],
+      "capabilities": ["command-classification", "parameter-extraction", "context-awareness"]
+    }
+  ],
+  "mcp_servers": [
+    {
+      "name": "ado",
+      "description": "Azure DevOps integration (work items, comments, tags)",
+      "command": "node",
+      "args": ["./mcp/ado-server.js"],
+      "required_env": ["ADO_ORG", "ADO_PROJECT", "ADO_PAT"],
+      "tools": [
+        "list-work-items",
+        "get-work-item",
+        "create-work-item",
+        "update-work-item",
+        "post-comment"
+      ]
+    }
+  ],
+  "hooks": [
+    {
+      "name": "context-loader",
+      "path": "./hooks/context-loader.js",
+      "trigger": "on-plugin-init",
+      "description": "Auto-load .sdlc/memory context on startup"
+    },
+    {
+      "name": "context-loader",
+      "path": "./hooks/context-loader.js",
+      "trigger": "on-message",
+      "description": "Extract context from chat messages (story ID, command, role)"
+    }
+  ],
+  "configuration": {
+    "required_env_vars": [
+      {
+        "name": "ADO_ORG",
+        "description": "Azure DevOps organization name (e.g., your-ado-org)",
+        "default": "your-ado-org"
+      },
+      {
+        "name": "ADO_PROJECT",
+        "description": "Azure DevOps project name (e.g., YourAzureProject)",
+        "default": "YourAzureProject"
+      },
+      {
+        "name": "ADO_PAT",
+        "description": "Azure DevOps Personal Access Token (get from ADO User Settings)",
+        "required": true,
+        "sensitive": true
+      }
+    ],
+    "optional_settings": {
+      "model_tier": {
+        "description": "Default model for skill execution (haiku, sonnet, opus)",
+        "default": "sonnet"
+      },
+      "memory_path": {
+        "description": "Path to .sdlc/memory directory for context persistence",
+        "default": ".sdlc/memory"
+      },
+      "canary_percentage": {
+        "description": "Default canary rollout percentage for deployments",
+        "default": 5
+      }
+    }
+  },
+  "prompts": {
+    "welcome": "Welcome to the AI-SDLC Platform! Use `/project:requirement-intake` to get started, or ask me anything about your product development.\n\nAvailable commands:\n- `/project:requirement-intake` — Capture new requirements\n- `/project:prd-review AB#123` — Review PRD for gaps\n- `/project:grooming AB#123` — Break down stories\n- `/project:architecture-review AB#123` — Design architecture\n- `/project:system-design AB#123` — Create data model & APIs\n\nOr just describe what you need in plain English!",
+    "help": "AI-SDLC Platform provides 15 automated SDLC stages:\n\n**Planning & Design** (stages 1-5):\n- Requirement Intake → PRD Review → Story Grooming → Architecture Review → System Design\n\n**Development & QA** (stages 6-9):\n- Sprint Planning → Implementation → Code Review → Test Design\n\n**Validation & Release** (stages 10-15):\n- Performance Testing → Staging Validation → Release Prep → Deployment → Monitoring → Incident Response\n\nUse `/project:<stage-name>` or describe what you need naturally."
+  },
+  "dependencies": {
+    "npm_packages": [
+      {
+        "name": "axios",
+        "version": "^1.6.0",
+        "description": "HTTP client for Azure DevOps API calls"
+      }
+    ],
+    "claude_models": ["haiku", "sonnet", "opus"],
+    "external_services": ["Azure DevOps"]
+  },
+  "file_structure": {
+    "skills/": "Individual skill implementations (one per SDLC stage)",
+    "agents/": "Intelligent agents (orchestrator, NL processor)",
+    "mcp/": "MCP server implementations (Azure DevOps)",
+    "hooks/": "Plugin lifecycle hooks (context loader)",
+    ".claude-plugin/": "Plugin metadata and configuration",
+    ".mcp.json": "MCP server configuration"
+  },
+  "setup_instructions": "See README.md for complete setup guide",
+  "support": {
+    "issues": "https://github.com/yourusername/ai-sdlc-platform/issues",
+    "documentation": "https://github.com/yourusername/ai-sdlc-platform/wiki",
+    "contact": "mehul.dedhia@ril.com"
+  }
+}

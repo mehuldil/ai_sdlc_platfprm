@@ -1,0 +1,426 @@
+{
+  "version": "2.1.1",
+  "description": "AI-SDLC Skill Registry - Capability-based routing for atomic skills",
+  "last_updated": "2026-04-20",
+  "metadata": {
+    "total_skills": 8,
+    "universal_skills": 8,
+    "role_specific_skills": 0,
+    "atomic_skills": 3,
+    "composed_skills": 2
+  },
+  "routing": {
+    "strategy": "tiered",
+    "fallback_chain": [
+      "stack_specific",
+      "role_specific",
+      "universal",
+      "generic"
+    ]
+  },
+  "skills": {
+    "rpi-research": {
+      "id": "rpi-research",
+      "description": "Research and requirements analysis phase of RPI workflow",
+      "category": "rpi",
+      "universal": true,
+      "accepts_roles": ["*"],
+      "accepts_stages": ["08-implementation", "05-system-design"],
+      "model": "sonnet-4-6",
+      "token_budget": {
+        "input": 6000,
+        "output": 4000
+      },
+      "implementations": {
+        "generic": {
+          "path": "skills/rpi-research.md",
+          "cost": 600,
+          "format": "monolithic"
+        },
+        "composed": {
+          "path": "skills/composed/rpi-research.yaml",
+          "cost": 400,
+          "format": "composition",
+          "atomic_skills": ["ado-fetch", "codebase-search", "wiki-lookup", "risk-identify"]
+        }
+      },
+      "input_schema": {
+        "type": "object",
+        "required": ["story_id"],
+        "properties": {
+          "story_id": {
+            "type": "string",
+            "description": "ADO work item ID or story identifier"
+          },
+          "max_files": {
+            "type": "integer",
+            "default": 10,
+            "maximum": 50
+          },
+          "max_chars_per_file": {
+            "type": "integer",
+            "default": 2000,
+            "maximum": 10000
+          }
+        }
+      },
+      "output_schema": {
+        "type": "object",
+        "required": ["research_file"],
+        "properties": {
+          "research_file": {
+            "type": "string",
+            "description": "Path to generated research.md"
+          },
+          "files_identified": {
+            "type": "integer"
+          },
+          "risks_found": {
+            "type": "array"
+          }
+        }
+      },
+      "cacheable": true,
+      "cache_ttl_seconds": 3600,
+      "cache_invalidation": ["git_head", "story_update"],
+      "fallback_on_error": "generic"
+    },
+    "rpi-plan": {
+      "id": "rpi-plan",
+      "description": "Planning and design phase of RPI workflow",
+      "category": "rpi",
+      "universal": true,
+      "accepts_roles": ["*"],
+      "accepts_stages": ["08-implementation"],
+      "model": "opus-4-6",
+      "token_budget": {
+        "input": 8000,
+        "output": 4000
+      },
+      "implementations": {
+        "generic": {
+          "path": "skills/rpi-plan.md",
+          "cost": 800,
+          "format": "monolithic"
+        },
+        "composed": {
+          "path": "skills/composed/rpi-plan.yaml",
+          "cost": 600,
+          "format": "composition",
+          "atomic_skills": ["research-loader", "diff-generator", "test-planner", "rollback-planner"]
+        }
+      },
+      "input_schema": {
+        "type": "object",
+        "required": ["story_id", "research_approved"],
+        "properties": {
+          "story_id": {
+            "type": "string"
+          },
+          "research_approved": {
+            "type": "boolean"
+          }
+        }
+      },
+      "output_schema": {
+        "type": "object",
+        "required": ["plan_file"],
+        "properties": {
+          "plan_file": {
+            "type": "string"
+          },
+          "files_to_modify": {
+            "type": "array"
+          },
+          "tests_to_add": {
+            "type": "array"
+          }
+        }
+      },
+      "cacheable": false,
+      "fallback_on_error": "generic"
+    },
+    "security-scan": {
+      "id": "security-scan",
+      "description": "Analyze code for security vulnerabilities",
+      "category": "security",
+      "universal": true,
+      "accepts_roles": ["backend", "frontend", "qa"],
+      "accepts_stages": ["09-code-review", "08-implementation", "12-commit-push"],
+      "model": "sonnet-4-6",
+      "token_budget": {
+        "input": 4000,
+        "output": 2000
+      },
+      "implementations": {
+        "java": {
+          "path": "skills/backend/security-scan/SKILL.md",
+          "cost": 400,
+          "format": "monolithic",
+          "stack": "java-backend"
+        },
+        "kotlin": {
+          "path": "skills/frontend/security-scan/SKILL.md",
+          "cost": 400,
+          "format": "monolithic",
+          "stack": "kotlin-android"
+        },
+        "generic": {
+          "path": "skills/shared/secrets-detector/SKILL.md",
+          "cost": 300,
+          "format": "monolithic"
+        }
+      },
+      "input_schema": {
+        "type": "object",
+        "required": ["files"],
+        "properties": {
+          "files": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "List of file paths to scan"
+          },
+          "depth": {
+            "type": "string",
+            "enum": ["quick", "full"],
+            "default": "quick"
+          }
+        }
+      },
+      "output_schema": {
+        "type": "object",
+        "required": ["findings"],
+        "properties": {
+          "findings": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "severity": {"enum": ["low", "medium", "high", "critical"]},
+                "type": {"type": "string"},
+                "location": {"type": "string"},
+                "message": {"type": "string"}
+              }
+            }
+          },
+          "risk_score": {"type": "number"}
+        }
+      },
+      "cacheable": true,
+      "cache_ttl_seconds": 1800,
+      "cache_invalidation": ["git_head"],
+      "fallback_chain": ["java", "kotlin", "generic"]
+    },
+    "code-review": {
+      "id": "code-review",
+      "description": "Multi-file code review against stack conventions",
+      "category": "quality",
+      "universal": true,
+      "accepts_roles": ["*"],
+      "accepts_stages": ["09-code-review"],
+      "model": "sonnet-4-6",
+      "token_budget": {
+        "input": 5000,
+        "output": 3000
+      },
+      "implementations": {
+        "generic": {
+          "path": "skills/shared/code-standards-check/SKILL.md",
+          "cost": 1000,
+          "format": "monolithic"
+        }
+      },
+      "input_schema": {
+        "type": "object",
+        "required": ["files"],
+        "properties": {
+          "files": {
+            "type": "array",
+            "items": {"type": "string"}
+          },
+          "stack": {
+            "type": "string"
+          }
+        }
+      },
+      "output_schema": {
+        "type": "object",
+        "properties": {
+          "status": {"enum": ["pass", "warn", "fail"]},
+          "findings": {"type": "array"},
+          "recommendations": {"type": "array"}
+        }
+      },
+      "cacheable": false
+    },
+    "story-generator": {
+      "id": "story-generator",
+      "description": "Generate master story from PRD",
+      "category": "product",
+      "universal": true,
+      "accepts_roles": ["product", "tpm"],
+      "accepts_stages": ["01-requirement-intake", "02-prd-review"],
+      "model": "sonnet-4-6",
+      "token_budget": {
+        "input": 4000,
+        "output": 3000
+      },
+      "implementations": {
+        "generic": {
+          "path": "skills/shared/story-generator/SKILL.md",
+          "cost": 600,
+          "format": "monolithic"
+        }
+      },
+      "input_schema": {
+        "type": "object",
+        "required": ["prd_content"],
+        "properties": {
+          "prd_content": {"type": "string"},
+          "type": {"enum": ["master", "sprint", "tech"], "default": "master"}
+        }
+      },
+      "output_schema": {
+        "type": "object",
+        "properties": {
+          "story_file": {"type": "string"},
+          "title": {"type": "string"},
+          "acceptance_criteria": {"type": "array"}
+        }
+      },
+      "cacheable": false
+    },
+    "update-documentation": {
+      "id": "update-documentation",
+      "description": "Atomic doc update — align README, wiki, ADRs, User_Manual when behavior or contracts change",
+      "category": "documentation",
+      "universal": true,
+      "accepts_roles": ["*"],
+      "accepts_stages": ["08-implementation", "09-code-review", "13-documentation"],
+      "model": "sonnet-4-6",
+      "token_budget": {"input": 4000, "output": 2000},
+      "implementations": {
+        "generic": {
+          "path": "skills/shared/update-documentation/SKILL.md",
+          "cost": 500,
+          "format": "monolithic"
+        }
+      },
+      "input_schema": {
+        "type": "object",
+        "required": ["change_scope"],
+        "properties": {
+          "change_scope": {"type": "string", "description": "Files or PRD-REF that changed"},
+          "surfaces": {
+            "type": "array",
+            "items": {"enum": ["README", "User_Manual", "ADR", "wiki", "rules"]},
+            "default": ["README", "User_Manual"]
+          },
+          "prd_ref": {"type": "string"}
+        }
+      },
+      "output_schema": {
+        "type": "object",
+        "properties": {
+          "files_updated": {"type": "array"},
+          "drift_report": {"type": "string"}
+        }
+      },
+      "cacheable": false
+    },
+    "sync-to-ado": {
+      "id": "sync-to-ado",
+      "description": "Atomic outbound Azure Boards sync — create/update/comment/state via CLI; inbound via observer",
+      "category": "integration",
+      "universal": true,
+      "accepts_roles": ["*"],
+      "accepts_stages": ["*"],
+      "model": "sonnet-4-6",
+      "token_budget": {"input": 4000, "output": 2000},
+      "implementations": {
+        "generic": {
+          "path": "skills/shared/sync-to-ado/SKILL.md",
+          "cost": 400,
+          "format": "monolithic"
+        }
+      },
+      "input_schema": {
+        "type": "object",
+        "required": ["operation"],
+        "properties": {
+          "operation": {"enum": ["create", "update", "comment", "state", "link"]},
+          "work_item_id": {"type": "integer"},
+          "fields": {"type": "object"},
+          "comment_text": {"type": "string"},
+          "target_state": {"type": "string"}
+        }
+      },
+      "output_schema": {
+        "type": "object",
+        "properties": {
+          "work_item_id": {"type": "integer"},
+          "url": {"type": "string"},
+          "status": {"enum": ["ok", "duplicate", "error"]}
+        }
+      },
+      "wires_to": {
+        "cli": "cli/sdlc.sh ado",
+        "observer": "orchestrator/ado-observer/observer.py",
+        "agent_ref": "agents/shared/ado-integration.md"
+      },
+      "cacheable": false
+    },
+    "generate-or-validate-unit-tests": {
+      "id": "generate-or-validate-unit-tests",
+      "description": "Atomic unit-test generation or validation against repo harness and coverage rule",
+      "category": "quality",
+      "universal": true,
+      "accepts_roles": ["backend", "frontend", "qa"],
+      "accepts_stages": ["08-implementation", "10-test-design", "11-test-execution"],
+      "model": "sonnet-4-6",
+      "token_budget": {"input": 6000, "output": 3000},
+      "implementations": {
+        "generic": {
+          "path": "skills/shared/generate-or-validate-unit-tests/SKILL.md",
+          "cost": 700,
+          "format": "monolithic"
+        }
+      },
+      "input_schema": {
+        "type": "object",
+        "required": ["mode"],
+        "properties": {
+          "mode": {"enum": ["generate", "validate"]},
+          "files": {"type": "array", "items": {"type": "string"}},
+          "stack": {"type": "string"},
+          "coverage_rule": {"type": "string", "default": "rules/coverage-rule.md"}
+        }
+      },
+      "output_schema": {
+        "type": "object",
+        "properties": {
+          "tests_created": {"type": "array"},
+          "coverage_pct": {"type": "number"},
+          "status": {"enum": ["pass", "fail", "bypassed"]},
+          "bypass_work_item": {"type": "integer"}
+        }
+      },
+      "blocking": true,
+      "bypass": {
+        "mechanism": "sdlc skip-tests --work-item=<id>",
+        "rule": "rules/pre-merge-test-enforcement.md",
+        "ado_comment_required": true
+      },
+      "cacheable": false
+    }
+  },
+  "atomic_skills": {
+    "update-documentation": "skills/shared/update-documentation/SKILL.md",
+    "sync-to-ado": "skills/shared/sync-to-ado/SKILL.md",
+    "generate-or-validate-unit-tests": "skills/shared/generate-or-validate-unit-tests/SKILL.md"
+  },
+  "composed_skills": {
+    "rpi-research": "skills/composed/rpi-research.yaml",
+    "rpi-plan": "skills/composed/rpi-plan.yaml"
+  }
+}

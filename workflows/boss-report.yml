@@ -1,0 +1,15 @@
+# Boss executive reporting workflow.
+# Uses standard stages: release-signoff for readiness, summary-close for wrap-up.
+# sprint-health is a lightweight reporting alias handled by the boss report agent.
+name: boss-report
+description: Executive reporting workflow for sprint health, release readiness, and dependency tracking
+default_role: boss
+
+stages:
+  - name: release-signoff
+    required: true
+    description: Assess release gate status, test coverage, P0/P1 items, go/no-go decision
+
+  - name: summary-close
+    required: false
+    description: Summarize sprint health, burndown, velocity, cross-team dependencies, and close

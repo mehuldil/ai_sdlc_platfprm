@@ -1,0 +1,60 @@
+# AI-SDLC Platform — validation on every PR and default branch
+# Local parity: bash scripts/ci-sdlc-platform.sh  |  quick: bash scripts/ci-sdlc-platform.sh --quick
+name: SDLC Platform CI
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - develop
+  pull_request:
+    branches:
+      - main
+      - master
+      - develop
+
+concurrency:
+  group: sdlc-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pr-traceability:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Assert PRD-REF and AB# in PR body
+        env:
+          BODY: ${{ github.event.pull_request.body }}
+        run: |
+          set -euo pipefail
+          if [ -z "${BODY:-}" ]; then
+            echo "::error::PR body is empty — include Traceability (PRD-REF + AB#) per pull request template."
+            exit 1
+          fi
+          if ! printf '%s' "$BODY" | grep -qE 'PRD-REF-[A-Za-z0-9_.-]+-SEC[0-9.]+'; then
+            echo "::error::PR body must include a PRD section reference like PRD-REF-<id>-SEC<section> (see rules/traceability-pr-prd.md)."
+            exit 1
+          fi
+          if ! printf '%s' "$BODY" | grep -qE 'AB#[0-9]+'; then
+            echo "::error::PR body must reference at least one ADO work item like AB#12345 (see rules/traceability-pr-prd.md)."
+            exit 1
+          fi
+          echo "PR traceability OK (PRD-REF + AB# present)."
+
+  claude-mirror-drift:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify .claude/ mirrors match canonical trees
+        run: |
+          set -euo pipefail
+          export GITHUB_ACTIONS=true
+          bash scripts/verify-claude-ssot-ci.sh .
+
+  platform-ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run platform validation suite
+        run: bash scripts/ci-sdlc-platform.sh

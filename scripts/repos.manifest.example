@@ -1,0 +1,5 @@
+# One git repository root per line (absolute or relative to this file).
+# Example:
+# /home/dev/work/order-service
+# ../billing-api
+# ../../platform/notification-worker

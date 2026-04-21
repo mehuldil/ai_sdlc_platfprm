@@ -1,0 +1,21 @@
+# NOTE: Stage names in this workflow (e.g., "test-design") are mapped by the CLI to
+# phase-numbered directory names (e.g., "10-test-design") via stage name resolution logic.
+# The CLI automatically prepends the phase number when looking up stage directories.
+name: test-cycle
+description: QA workflow for comprehensive testing and release signoff
+default_role: qa
+
+stages:
+  - name: test-design
+    required: true
+    description: Analyze requirements, design test cases, identify risk areas
+    skip_if: work_item_type == 'Documentation'
+
+  - name: test-execution
+    required: true
+    description: Execute tests, run automation suite, analyze failures
+    skip_if: work_item_type == 'Documentation'
+
+  - name: release-signoff
+    required: true
+    description: Verify test gates passed, coverage thresholds met, sign off on quality

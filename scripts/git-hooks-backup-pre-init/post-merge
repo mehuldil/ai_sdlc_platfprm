@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+REPO="$(git rev-parse --show-toplevel)"
+for PLAT in "$REPO/ai-sdlc-platform" "$REPO/../ai-sdlc-platform"; do
+  if [[ -f "$PLAT/scripts/sdlc-auto-sync.sh" ]]; then
+    bash "$PLAT/scripts/sdlc-auto-sync.sh" post-merge
+    exit 0
+  fi
+done
+exit 0

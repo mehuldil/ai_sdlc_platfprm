@@ -1,0 +1,30 @@
+# NOTE: Stage names in this workflow (e.g., "requirement-intake") are mapped by the CLI to
+# phase-numbered directory names (e.g., "01-requirement-intake") via stage name resolution logic.
+# The CLI automatically prepends the phase number when looking up stage directories.
+name: prd-to-stories
+description: Product workflow from PRD creation through story generation and grooming
+default_role: product
+
+stages:
+  - name: requirement-intake
+    required: true
+    description: Collect and refine product requirements, user stories, feature requests
+
+  - name: prd-review
+    required: true
+    description: Review and validate PRD content before grooming
+    skip_if: work_item_type == 'UserStory'
+
+  - name: pre-grooming
+    required: true
+    description: Prioritize epics, identify blockers, prepare for grooming
+    skip_if: work_item_type == 'Task'
+
+  - name: grooming
+    required: true
+    description: Estimate, clarify acceptance criteria, generate stories from epic
+    skip_if: work_item_type == 'Task'
+
+  - name: task-breakdown
+    required: false
+    description: Break down stories into implementation tasks for developers

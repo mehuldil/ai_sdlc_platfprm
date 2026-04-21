@@ -1,0 +1,125 @@
+name: rpi-plan
+version: 2.0.0
+description: Planning and design phase of RPI workflow (composed from atomic skills)
+category: rpi
+universal: true
+model: opus-4-6
+token_budget:
+  input: 8000
+  output: 4000
+
+fallback: skills/rpi-plan.md
+
+# Pre-conditions
+pre_conditions:
+  - file_exists: ".sdlc/rpi/{story_id}/research.md"
+  - file_exists: ".sdlc/rpi/{story_id}/.approved-research"
+    on_failure: |
+      ERROR: Research not approved.
+      Run 'sdlc rpi research {story_id}' first and wait for approval.
+
+context:
+  required:
+    - story_id
+
+composition:
+  - id: step-1-load
+    name: Load Research
+    skill: file-loader
+    input:
+      file: ".sdlc/rpi/{context.story_id}/research.md"
+    output: research_data
+    
+  - id: step-2-read-files
+    name: Read Target Files
+    skill: file-extract
+    description: Read full content of files identified in research
+    input:
+      files: "$research_data.files_to_modify"
+      max_chars_per_file: 5000
+      strategy: full
+    output: target_file_contents
+    depends_on:
+      - step-1-load
+      
+  - id: step-3-plan-structure
+    name: Plan File Structure
+    skill: diff-planner
+    description: Create plan for file modifications
+    input:
+      research: "$research_data"
+      target_files: "$target_file_contents"
+    output: file_structure_plan
+    depends_on:
+      - step-2-read-files
+      
+  - id: step-4-plan-tests
+    name: Plan Tests
+    skill: test-planner
+    description: Identify tests to add/modify
+    input:
+      file_structure_plan: "$file_structure_plan"
+      existing_tests: "$research_data.existing_tests"
+    output: test_plan
+    depends_on:
+      - step-3-plan-structure
+      
+  - id: step-5-rollback
+    name: Plan Rollback
+    skill: rollback-planner
+    description: Define rollback strategy
+    input:
+      files_to_modify: "$file_structure_plan.files_to_modify"
+    output: rollback_plan
+    optional: true
+    
+  - id: step-6-generate
+    name: Generate Plan Document
+    skill: doc-generate
+    template: plan-output.md
+    input:
+      research_data: "$research_data"
+      file_structure_plan: "$file_structure_plan"
+      test_plan: "$test_plan"
+      rollback_plan: "$rollback_plan"
+    output:
+      file: ".sdlc/rpi/{context.story_id}/plan.md"
+    depends_on:
+      - step-3-plan-structure
+      - step-4-plan-tests
+
+gate:
+  id: plan-gate
+  description: Review implementation plan
+  prompt: |
+    Plan complete for {story_id}.
+    
+    Files to modify: {file_structure_plan.files | length}
+    Tests to add: {test_plan.tests | length}
+    
+    Approve plan?
+  options:
+    - id: approve
+      label: Approve - Begin implementation
+      action: create_marker_file
+      marker: ".approved-plan"
+    - id: refine
+      label: Refine - Modify plan
+      action: loop_back
+      loop_to: step-3-plan-structure
+    - id: reject
+      label: Reject - Stop workflow
+      action: exit
+
+ado_actions:
+  on_complete:
+    - action: add_comment
+      text: |
+        **Planning Complete**
+        
+        Files to modify: {file_structure_plan.files | length}
+        Lines estimated: {file_structure_plan.total_lines}
+        
+        Plan: `.sdlc/rpi/{story_id}/plan.md`
+    - action: add_tags
+      tags: ["rpi:plan-complete"]

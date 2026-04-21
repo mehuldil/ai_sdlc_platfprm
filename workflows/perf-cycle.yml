@@ -1,0 +1,23 @@
+# NOTE: Stage names in this workflow (e.g., "test-design") are mapped by the CLI to
+# phase-numbered directory names (e.g., "10-test-design") via stage name resolution logic.
+# The CLI automatically prepends the phase number when looking up stage directories.
+name: perf-cycle
+description: Performance engineering workflow from test design through load testing and signoff
+default_role: performance
+
+stages:
+  - name: requirement-intake
+    required: true
+    description: Collect performance requirements and SLO definitions
+
+  - name: test-design
+    required: true
+    description: Design perf test scenarios, define SLOs and resource allocation (Opus architect)
+
+  - name: test-execution
+    required: true
+    description: Execute load tests via JMX + Argo Workflow, analyze results (Sonnet builder + Haiku executor)
+
+  - name: release-signoff
+    required: true
+    description: Verify performance gates passed, generate perf report, sign off on readiness

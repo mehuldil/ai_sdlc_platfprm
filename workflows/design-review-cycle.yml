@@ -1,0 +1,16 @@
+# NOTE: Stage names in this workflow (e.g., "design-review") are mapped by the CLI to
+# phase-numbered directory names (e.g., "06-design-review") via stage name resolution logic.
+# The CLI automatically prepends the phase number when looking up stage directories.
+name: design-review-cycle
+description: UI/UX designer workflow for design review and fidelity validation
+default_role: ui
+
+stages:
+  - name: system-design
+    required: false
+    description: Collaborate on design system decisions and component definitions
+
+  - name: design-review
+    required: true
+    description: Verify Figma mockups for fidelity, component usage, design token compliance (DevLens)
+    skip_if: work_item_type == 'Task' or work_item_type == 'Bug'

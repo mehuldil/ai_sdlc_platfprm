@@ -1,0 +1,24 @@
+{
+  "name": "ai-sdlc-ide-plugin",
+  "version": "1.1.0",
+  "type": "module",
+  "description": "Complete intelligent SDLC automation in IDE chat — Claude Code, Cursor, CLI",
+  "main": "mcp/ado-server.js",
+  "author": "Mehul Dedhia & your-ado-org",
+  "license": "Proprietary",
+  "keywords": ["sdlc", "automation", "devops", "azure-devops", "mcp", "ide-plugin"],
+  "scripts": {
+    "setup": "npm install --production && node scripts/setup.js",
+    "start": "node mcp/ado-server.js",
+    "test:mcp": "npx @modelcontextprotocol/inspector node mcp/ado-server.js",
+    "validate": "node --check mcp/ado-server.js && node --check hooks/context-loader.js && echo '✓ All files valid'"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "axios": "^1.6.0",
+    "zod": "^3.25.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

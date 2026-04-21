@@ -1,0 +1,65 @@
+name: plan-design-implement
+description: Focused execution mode with explicit PLAN -> DESIGN -> IMPLEMENT phases
+default_role: product
+
+stages:
+  - name: pre-grooming
+    required: true
+    description: Clarify scope, blockers, assumptions
+    phase_mode: PLAN
+
+  - name: grooming
+    required: true
+    description: Acceptance criteria and estimation
+    phase_mode: PLAN
+
+  - name: task-breakdown
+    required: true
+    description: Create execution-ready tasks
+    phase_mode: PLAN
+
+  - name: system-design
+    required: true
+    description: Architecture and contracts
+    phase_mode: DESIGN
+
+  - name: design-review
+    required: false
+    description: Validate design quality before build
+    phase_mode: DESIGN
+
+  - name: implementation
+    required: true
+    description: Build exactly to approved plan/design
+    phase_mode: IMPLEMENT
+
+  - name: code-review
+    required: true
+    description: Code quality and security checks
+    phase_mode: IMPLEMENT
+
+  - name: test-design
+    required: true
+    description: Design test strategy from acceptance criteria
+    phase_mode: IMPLEMENT
+
+  - name: test-execution
+    required: true
+    description: Execute and analyze results
+    phase_mode: IMPLEMENT
+
+  - name: commit-push
+    required: true
+    description: Prepare branch for merge
+    phase_mode: IMPLEMENT
+
+  - name: documentation
+    required: false
+    description: Keep ADRs/runbooks synchronized
+    phase_mode: IMPLEMENT
+
+  - name: summary-close
+    required: false
+    description: Close loop and checkpoint memory
+    phase_mode: IMPLEMENT
+
