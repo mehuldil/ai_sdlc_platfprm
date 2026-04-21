@@ -18,6 +18,10 @@ env/.env.staging
 !env/.env.example
 !env/env.template
 
+# Stories folder - contains organization-specific ADO work items
+# Do not commit to general platform repo - keep in local workspace only
+stories/
+
 # Token usage logs
 env/.token-usage.log
 env/.last-ado-create.json
