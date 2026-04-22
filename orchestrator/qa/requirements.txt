@@ -5,8 +5,8 @@ fastapi==0.104.1
 uvicorn[standard]==0.24.0
 
 # Workflow orchestration
-langgraph==0.0.38
-langchain==0.1.0
+langgraph==0.3.28
+langchain==0.3.24
 
 # Redis
 redis==5.0.1
