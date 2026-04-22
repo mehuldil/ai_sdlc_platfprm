@@ -2,13 +2,44 @@
 
 ## Azure DevOps Integration
 
-### Two Modes
+### Three Modes
 
-| Mode | Interface | How It Works |
-|------|-----------|-------------|
-| MCP Mode | IDE (Cursor, Claude Code) | `mcp.json` → `@azure-devops/mcp` → ADO API |
-| CLI Mode | Terminal | `sdlc ado` → `curl` → ADO REST API v7.0 |
-| **Observer Mode** (v2.1.1) | Background | ADO → Webhook/Polling → Platform triggers (with idempotent dedup) |
+| Mode | Interface | How It Works | Best For |
+|------|-----------|-------------|----------|
+| **MCP Mode** | IDE (Cursor, Claude Code) | `mcp.json` → `@azure-devops/mcp` → ADO API | Interactive queries, rich context |
+| **CLI Mode** | Terminal | `sdlc ado` → `curl` → ADO REST API v7.0 | Scripts, offline workflows, automation |
+| **Observer Mode** (v2.1.1) | Background | ADO → Webhook/Polling → Platform triggers | Real-time sync, event-driven |
+
+### Quick Reference: Search ADO Work Items
+
+| Method | Command | When to Use |
+|--------|---------|-------------|
+| **CLI (Offline-safe)** | `sdlc ado search "Family Hub"` | Fast text search, no MCP setup needed |
+| **CLI (Filtered)** | `sdlc ado search state=Active --top 10` | Filtered queries, programmatic use |
+| **CLI (My Items)** | `sdlc ado search assignedTo=me` | Quick personal work item lookup |
+| **MCP (Rich)** | `@mcp azure-devops search "Family Hub"` | Full ADO search with all fields |
+| **CLI (Get Details)** | `sdlc ado get 865620` | Formatted summary of specific work item |
+
+**CLI Search Examples:**
+```bash
+# Text search in titles
+sdlc ado search "Family Hub"
+
+# State filter
+sdlc ado search state=Active
+
+# Type filter
+sdlc ado search type=Feature
+
+# Combined filters
+sdlc ado search "Family Hub" state=Proposed type=Feature --top 5
+
+# My work items
+sdlc ado search assignedTo=me
+
+# Get formatted summary
+sdlc ado get 865620
+```
 
 Both use the same credentials from `env/.env`.
 

@@ -118,7 +118,9 @@ Repositories (Multi-Repo):
 Azure DevOps:
   ado create <type> --title="…" [--yes]  Create work item (non-TTY: --yes or SDLC_ADO_CONFIRM=yes)
   ado list [--type=…] [--state=…]  List work items
-  ado show <id>                  Show work item details
+  ado show <id>                  Show work item details (full)
+  ado search <query> [--top N]   Search work items by text/state/type/assignee
+  ado get <id>                   Get work item summary (formatted)
   ado update <id> --state=… [--assigned-to=email]  Update state and/or assignee
   ado link <id> --parent=<id>    Link child to parent
   ado description <id> --file=…  Set description from file
