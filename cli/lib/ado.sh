@@ -722,10 +722,11 @@ _ado_create() {
   local title=""
   local parent=""
   local desc_file=""
+  local ac_file=""
   local assume_yes=0
 
   if [[ -z "$type" ]]; then
-    log_error "Usage: sdlc ado create <type> --title=\"...\" [--parent=ID] [--description-file=PATH] [--template=tech-task] [--yes]"
+    log_error "Usage: sdlc ado create <type> --title=\"...\" [--parent=ID] [--description-file=PATH] [--acceptance-criteria-file=PATH] [--template=tech-task] [--yes]"
     log_info "Types: epic, feature, story, task, bug, testcase, testplan"
     log_info "Non-interactive shells: add --yes or set SDLC_ADO_CONFIRM=yes before creating work items."
     return 1
@@ -738,6 +739,7 @@ _ado_create() {
       --title=*) title="${arg#--title=}" ;;
       --parent=*) parent="${arg#--parent=}" ;;
       --description-file=*) desc_file="${arg#--description-file=}" ;;
+      --acceptance-criteria-file=*) ac_file="${arg#--acceptance-criteria-file=}" ;;
       --template=tech-task) desc_file="${PLATFORM_DIR}/templates/tech-task-template.md" ;;
       --yes) assume_yes=1 ;;
       *) log_warn "Unknown flag: $arg" ;;
@@ -746,6 +748,11 @@ _ado_create() {
 
   if [[ -n "$desc_file" ]] && [[ ! -f "$desc_file" ]]; then
     log_error "Description file not found: $desc_file"
+    return 1
+  fi
+
+  if [[ -n "$ac_file" ]] && [[ ! -f "$ac_file" ]]; then
+    log_error "Acceptance criteria file not found: $ac_file"
     return 1
   fi
 
@@ -789,6 +796,14 @@ _ado_create() {
     desc_html=$(_markdown_to_html "$desc_raw")
   fi
 
+  # Build acceptance criteria HTML if AC file provided
+  local ac_html=""
+  if [[ -n "$ac_file" ]]; then
+    local ac_raw
+    ac_raw=$(cat "$ac_file")
+    ac_html=$(_markdown_to_html "$ac_raw")
+  fi
+
   # Show preview and get confirmation
   _ado_preview_and_confirm "$wi_type" "$title" "$parent" "$desc_html" "collected_fields" "$assume_yes" || {
     log_info "Creation cancelled"
@@ -806,6 +821,12 @@ _ado_create() {
   if [[ -n "$desc_html" ]]; then
     local esc_desc=$(_json_escape "$desc_html")
     body+=",{\"op\":\"add\",\"path\":\"/fields/System.Description\",\"value\":\"${esc_desc}\"}"
+  fi
+
+  # Add acceptance criteria if provided (using Microsoft.VSTS.Common.AcceptanceCriteria field)
+  if [[ -n "$ac_html" ]]; then
+    local esc_ac=$(_json_escape "$ac_html")
+    body+=",{\"op\":\"add\",\"path\":\"/fields/Microsoft.VSTS.Common.AcceptanceCriteria\",\"value\":\"${esc_ac}\"}"
   fi
 
   # Add collected fields
@@ -1240,23 +1261,28 @@ _ado_push_story() {
 
   log_info "Title: $title"
 
-  # Create temporary description file combining description and criteria
+  # Create temporary description file (description only, AC goes to separate field)
   local temp_desc
   temp_desc="$(mktemp 2>/dev/null || echo "${TMPDIR:-/tmp}/sdlc-story-desc-$$.md")"
   {
     if [[ -n "$desc_section" ]]; then
       echo "$desc_section"
-      echo ""
-    fi
-    if [[ -n "$criteria_section" ]]; then
-      echo "## Acceptance Criteria"
-      echo "$criteria_section"
     fi
   } > "$temp_desc"
 
-  # Create work item with description (optional parent = Feature/User Story/Epic above this item)
+  # Create temporary acceptance criteria file
+  local temp_ac=""
+  if [[ -n "$criteria_section" ]]; then
+    temp_ac="$(mktemp 2>/dev/null || echo "${TMPDIR:-/tmp}/sdlc-story-ac-$$.md")"
+    echo "$criteria_section" > "$temp_ac"
+  fi
+
+  # Create work item with description and acceptance criteria
   local wi_id
   local create_args=("$create_type" "--title=$title" "--description-file=$temp_desc")
+  if [[ -n "$temp_ac" ]]; then
+    create_args+=("--acceptance-criteria-file=$temp_ac")
+  fi
   if [[ -n "$parent" ]]; then
     create_args+=("--parent=$parent")
   fi
@@ -1264,11 +1290,11 @@ _ado_push_story() {
     create_args+=("--yes")
   fi
   wi_id=$(_ado_create "${create_args[@]}") || {
-    rm -f "$temp_desc" 2>/dev/null || true
+    rm -f "$temp_desc" "$temp_ac" 2>/dev/null || true
     return 1
   }
 
-  rm -f "$temp_desc" 2>/dev/null || true
+  rm -f "$temp_desc" "$temp_ac" 2>/dev/null || true
 
   log_success "Work item created in ADO: $wi_id"
   echo "$wi_id"

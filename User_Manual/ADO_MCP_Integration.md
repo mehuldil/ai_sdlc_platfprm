@@ -10,6 +10,35 @@
 | **CLI Mode** | Terminal | `sdlc ado` → `curl` → ADO REST API v7.0 | Scripts, offline workflows, automation |
 | **Observer Mode** (v2.1.1) | Background | ADO → Webhook/Polling → Platform triggers | Real-time sync, event-driven |
 
+### Acceptance Criteria Field (v2.1.4+)
+
+When pushing stories to ADO via `sdlc story push` or `sdlc ado push-story`, the platform now populates the **dedicated acceptance criteria field** (`Microsoft.VSTS.Common.AcceptanceCriteria`) instead of embedding AC within the description.
+
+**Benefits:**
+- AC appears in ADO's dedicated Acceptance Criteria section (visible in work item form)
+- Better separation of narrative description from testable criteria
+- Standard ADO field enables better reporting and queries
+
+**How it works:**
+1. Story files must have `## Acceptance Criteria` section (standard template format)
+2. CLI extracts AC content and converts to HTML
+3. AC is sent to `Microsoft.VSTS.Common.AcceptanceCriteria` field via JSON Patch
+4. Description field contains only narrative content (before AC section)
+
+**Example story structure:**
+```markdown
+# Story Title
+
+Description content here...
+
+## Acceptance Criteria
+
+### Scenario 1
+1. **Given** context
+   **When** action
+   **Then** result
+```
+
 ### Quick Reference: Search ADO Work Items
 
 | Method | Command | When to Use |
@@ -54,6 +83,27 @@ ADO_PAT=your-personal-access-token
 
 **Get ADO PAT:** `https://dev.azure.com/{ORG}/_usersSettings/tokens`
 - Scopes: "Work Items (Read & Write)"
+
+### Work Item Types: Story vs Feature vs Epic
+
+**Recommendation: Use User Story as default for all stories** (v2.1.4+)
+
+| Type | When to Use | CLI Flag |
+|------|-------------|----------|
+| **User Story** (default) | Functional requirements with acceptance criteria. Use for both master stories and sprint stories. | `--type=story` or omit |
+| **Feature** | Large cross-cutting initiatives requiring portfolio tracking. Rarely needed for single-team work. | `--type=feature` |
+| **Epic** | Strategic initiatives spanning multiple releases or quarters. | `--type=epic` |
+
+**Master stories are User Stories**, not Features. A master story contains detailed acceptance criteria for a complete user journey (e.g., "Family Hub Phase 1"). Only use Feature type when you need ADO's portfolio roll-up capabilities for cross-team initiatives.
+
+**Example:**
+```bash
+# Master story → User Story (recommended)
+sdlc story push ./stories/MS-family-hub.md
+
+# Sprint story → User Story (default)
+sdlc story push ./stories/SS-sprint-3.md --parent=865620
+```
 
 ### ADO Work Item Tagging
 

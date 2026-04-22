@@ -24,6 +24,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.1.4] - 2026-04-22
+
+### Added — Acceptance Criteria Field Support
+
+- **Dedicated AC field population** — Stories now populate `Microsoft.VSTS.Common.AcceptanceCriteria` instead of embedding AC in description
+  - CLI extracts AC from `## Acceptance Criteria` section in markdown
+  - AC converted to HTML and sent to dedicated ADO field
+  - Description field contains only narrative content (before AC section)
+  - Updated: `cli/lib/ado.sh` — `_ado_push_story()` and `_ado_create()` functions
+
+### Changed — Master Story Guidance
+
+- **Master stories default to User Story** (not Feature)
+  - Updated help text: `sdlc story push` now recommends `--type=story` for master stories
+  - Rationale: Master stories contain AC for complete user journeys; Feature type only needed for portfolio roll-up
+  - `--type=feature` still available for cross-cutting initiatives
+
+### Updated — Family Hub Work Items
+
+- Populated acceptance criteria field for existing work items:
+  - 865620 (Master Story - Family Hub Phase 1) — AC extracted and updated
+  - 865621 (Sprint 3 - Hub Creation & Invite) — AC extracted and updated
+  - 865622 (Sprint 4 - Member Management) — AC extracted and updated
+
+### Documentation
+
+- `User_Manual/ADO_MCP_Integration.md` — Added AC field section and work item type guidance
+- `cli/commands/story.sh` — Updated help text for master story recommendations
+
+---
+
 ## [2.1.3] - 2026-04-22
 
 ### Added — ADO Search Commands (CLI)
