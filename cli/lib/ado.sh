@@ -447,6 +447,219 @@ _ado_handle_failure() {
 # ADO COMMANDS
 # ============================================================================
 
+# Search ADO work items using WIQL
+_ado_search() {
+  local query="${1:-}"
+  local top="${2:-20}"
+
+  if [[ -z "$query" ]]; then
+    log_info "Usage: sdlc ado search <query|filter> [--top N]"
+    log_info ""
+    log_info "Examples:"
+    log_info "  sdlc ado search \"Family Hub\"              # Text search in title"
+    log_info "  sdlc ado search \"state=Active\"            # State filter"
+    log_info "  sdlc ado search \"type=Feature\"            # Type filter"
+    log_info "  sdlc ado search \"assignedTo=me\"           # My work items"
+    log_info "  sdlc ado search \"Family Hub\" --top 5     # Limit results"
+    return 0
+  fi
+
+  # Parse options
+  local search_text=""
+  local work_item_type=""
+  local state=""
+  local assigned_to=""
+
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --top)
+        top="$2"
+        shift 2
+        ;;
+      *)
+        if [[ -z "$search_text" ]]; then
+          # Parse filter syntax
+          if [[ "$1" =~ ^state=(.+)$ ]]; then
+            state="${BASH_REMATCH[1]}"
+          elif [[ "$1" =~ ^type=(.+)$ ]]; then
+            work_item_type="${BASH_REMATCH[1]}"
+          elif [[ "$1" =~ ^assignedTo=(.+)$ ]]; then
+            assigned_to="${BASH_REMATCH[1]}"
+          else
+            search_text="$1"
+          fi
+        fi
+        shift
+        ;;
+    esac
+  done
+
+  # Build WIQL query
+  local fields="System.Id,System.Title,System.WorkItemType,System.State,System.AssignedTo,System.ChangedDate"
+  local conditions=()
+
+  # Project filter
+  conditions+=("[System.TeamProject] = '$ADO_PROJECT'")
+
+  # Text search
+  if [[ -n "$search_text" ]]; then
+    local escaped_text="${search_text//\'/\'\'}"
+    conditions+=("[System.Title] EVER CONTAINS '$escaped_text'")
+  fi
+
+  # Type filter
+  if [[ -n "$work_item_type" ]]; then
+    conditions+=("[System.WorkItemType] = '$work_item_type'")
+  fi
+
+  # State filter
+  if [[ -n "$state" ]]; then
+    conditions+=("[System.State] = '$state'")
+  fi
+
+  # Assigned to filter
+  if [[ -n "$assigned_to" ]]; then
+    if [[ "$assigned_to" == "me" ]]; then
+      conditions+=("[System.AssignedTo] = @Me")
+    else
+      conditions+=("[System.AssignedTo] CONTAINS '$assigned_to'")
+    fi
+  fi
+
+  # Combine conditions
+  local where_clause=""
+  for condition in "${conditions[@]}"; do
+    if [[ -z "$where_clause" ]]; then
+      where_clause="$condition"
+    else
+      where_clause="$where_clause AND $condition"
+    fi
+  done
+
+  local wiql="SELECT [$fields] FROM workitems WHERE $where_clause ORDER BY [System.ChangedDate] DESC"
+
+  log_info "Searching: $wiql"
+
+  # Execute WIQL query
+  local api_url="https://dev.azure.com/${ADO_ORG}/${ADO_PROJECT}/_apis/wit/wiql?api-version=7.0"
+  local auth="$(echo -n ":$ADO_PAT" | base64 -w 0 2>/dev/null || echo -n ":$ADO_PAT" | base64)"
+  local query_body="{\"query\": \"$wiql\"}"
+
+  local response
+  response=$(curl -sS -X POST \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Basic $auth" \
+    -d "$query_body" \
+    "$api_url" 2>&1) || {
+    log_error "Query failed: $response"
+    return 1
+  }
+
+  # Check for errors
+  if echo "$response" | grep -q '"message"' 2>/dev/null; then
+    local error_msg=$(echo "$response" | _ado_json_field "." "message" 2>/dev/null || echo "Unknown error")
+    log_error "ADO API error: $error_msg"
+    return 1
+  fi
+
+  # Extract work item IDs
+  local work_item_ids
+  work_item_ids=$(echo "$response" | jq -r '.workItems[].id' 2>/dev/null | head -n "$top" | tr '\n' ',' | sed 's/,$//')
+
+  if [[ -z "$work_item_ids" ]]; then
+    log_warn "No work items found"
+    return 0
+  fi
+
+  # Fetch full details
+  local details_url="https://dev.azure.com/${ADO_ORG}/${ADO_PROJECT}/_apis/wit/workitems?ids=${work_item_ids}&fields=${fields}&api-version=7.0"
+  local details_response
+  details_response=$(curl -sS -H "Authorization: Basic $auth" "$details_url" 2>&1) || {
+    log_error "Failed to fetch work item details"
+    return 1
+  }
+
+  # Pretty print results
+  log_section "ADO Search Results"
+  echo "$details_response" | jq -r '.value[] |
+    "\n┌─────────────────────────────────────────────────────────────┐\n" +
+    "│ " + (.id|tostring) + " | " + (.fields["System.WorkItemType"] // "Unknown") +
+    " | " + (.fields["System.State"] // "Unknown") + "\n" +
+    "│ " + (.fields["System.Title"] // "No Title") + "\n" +
+    "│ Assigned: " + ((.fields["System.AssignedTo"] // "Unassigned") | if type == "object" then .displayName else . end) + "\n" +
+    "│ Updated: " + (.fields["System.ChangedDate"] // "N/A") + "\n" +
+    "└─────────────────────────────────────────────────────────────┘"
+  ' 2>/dev/null
+
+  local count=$(echo "$details_response" | jq '.value | length' 2>/dev/null || echo "0")
+  log_success "Found $count work item(s)"
+}
+
+# Get specific work item details (alias for show with better formatting)
+_ado_get() {
+  local work_item_id="${1:-}"
+
+  if [[ -z "$work_item_id" ]]; then
+    log_error "Usage: sdlc ado get <work-item-id>"
+    return 1
+  fi
+
+  # Normalize ID
+  work_item_id=$(_normalize_ado_wi_id "$work_item_id")
+
+  # Fetch via existing _ado_show with better formatting
+  local response
+  response=$(_ado_curl -H "Authorization: Basic $(echo -n ":$ADO_PAT" | base64 -w 0 2>/dev/null || echo -n ":$ADO_PAT" | base64)" \
+    "https://dev.azure.com/${ADO_ORG}/${ADO_PROJECT}/_apis/wit/workitems/${work_item_id}?api-version=7.0&\$expand=all" 2>&1)
+
+  if [[ $? -ne 0 ]]; then
+    log_error "Failed to fetch work item $work_item_id"
+    return 1
+  fi
+
+  # Pretty print
+  log_section "Work Item $work_item_id"
+
+  local wi_type=$(echo "$response" | _ado_json_field "." "System.WorkItemType")
+  local title=$(echo "$response" | _ado_json_field "." "System.Title")
+  local state=$(echo "$response" | _ado_json_field "." "System.State")
+  local assigned_to=$(echo "$response" | _ado_json_field "." "System.AssignedTo")
+  local created_by=$(echo "$response" | _ado_json_field "." "System.CreatedBy")
+  local created_date=$(echo "$response" | _ado_json_field "." "System.CreatedDate")
+  local changed_date=$(echo "$response" | _ado_json_field "." "System.ChangedDate")
+
+  # Handle display name extraction
+  if [[ "$assigned_to" == *"displayName"* ]]; then
+    assigned_to=$(echo "$assigned_to" | jq -r '.displayName' 2>/dev/null || echo "$assigned_to")
+  fi
+  if [[ "$created_by" == *"displayName"* ]]; then
+    created_by=$(echo "$created_by" | jq -r '.displayName' 2>/dev/null || echo "$created_by")
+  fi
+
+  # Strip HTML from description
+  local description=$(echo "$response" | _ado_json_field "." "System.Description" | sed 's/<[^>]*>//g' | head -c 300)
+
+  echo ""
+  echo "╔════════════════════════════════════════════════════════════════╗"
+  echo "║  Type:      $wi_type"
+  echo "║  State:     $state"
+  echo "║  Title:     $title"
+  echo "╠════════════════════════════════════════════════════════════════╣"
+  echo "║  Assigned: ${assigned_to:-Unassigned}"
+  echo "║  Created:  ${created_by:-Unknown}"
+  echo "║  Date:     ${created_date:-N/A}"
+  echo "╠════════════════════════════════════════════════════════════════╣"
+  echo "║  Description:"
+  echo "║  ${description:-No description}"
+  if [[ ${#description} -ge 300 ]]; then
+    echo "║  ... (truncated, use 'sdlc ado show $work_item_id' for full)"
+  fi
+  echo "╚════════════════════════════════════════════════════════════════╝"
+
+  echo ""
+  log_info "URL: https://dev.azure.com/${ADO_ORG}/${ADO_PROJECT}/_workitems/edit/${work_item_id}"
+}
+
 _ado_comment_cmd() {
   local wi_id="${1:-}"
   shift 2>/dev/null || true
@@ -484,6 +697,8 @@ cmd_ado() {
     create)      _ado_create "$@" ;;
     list)        _ado_list "$@" ;;
     show)        _ado_show "$@" ;;
+    search)      _ado_search "$@" ;;
+    get)         _ado_get "$@" ;;
     update)      _ado_update "$@" ;;
     link)        _ado_link "$@" ;;
     link-pr)     _ado_link_pr "$@" ;;
@@ -495,7 +710,7 @@ cmd_ado() {
     sync-to)     _ado_sync_to "$@" ;;
     *)
       log_error "Unknown ADO command: $subcmd"
-      log_info "Commands: create, list, show, update, link, link-pr, comment, description, push-story, sync, sync-from, sync-to"
+      log_info "Commands: create, list, show, search, get, update, link, link-pr, comment, description, push-story, sync, sync-from, sync-to"
       return 1
       ;;
   esac
@@ -507,10 +722,11 @@ _ado_create() {
   local title=""
   local parent=""
   local desc_file=""
+  local ac_file=""
   local assume_yes=0
 
   if [[ -z "$type" ]]; then
-    log_error "Usage: sdlc ado create <type> --title=\"...\" [--parent=ID] [--description-file=PATH] [--template=tech-task] [--yes]"
+    log_error "Usage: sdlc ado create <type> --title=\"...\" [--parent=ID] [--description-file=PATH] [--acceptance-criteria-file=PATH] [--template=tech-task] [--yes]"
     log_info "Types: epic, feature, story, task, bug, testcase, testplan"
     log_info "Non-interactive shells: add --yes or set SDLC_ADO_CONFIRM=yes before creating work items."
     return 1
@@ -523,6 +739,7 @@ _ado_create() {
       --title=*) title="${arg#--title=}" ;;
       --parent=*) parent="${arg#--parent=}" ;;
       --description-file=*) desc_file="${arg#--description-file=}" ;;
+      --acceptance-criteria-file=*) ac_file="${arg#--acceptance-criteria-file=}" ;;
       --template=tech-task) desc_file="${PLATFORM_DIR}/templates/tech-task-template.md" ;;
       --yes) assume_yes=1 ;;
       *) log_warn "Unknown flag: $arg" ;;
@@ -531,6 +748,11 @@ _ado_create() {
 
   if [[ -n "$desc_file" ]] && [[ ! -f "$desc_file" ]]; then
     log_error "Description file not found: $desc_file"
+    return 1
+  fi
+
+  if [[ -n "$ac_file" ]] && [[ ! -f "$ac_file" ]]; then
+    log_error "Acceptance criteria file not found: $ac_file"
     return 1
   fi
 
@@ -574,6 +796,14 @@ _ado_create() {
     desc_html=$(_markdown_to_html "$desc_raw")
   fi
 
+  # Build acceptance criteria HTML if AC file provided
+  local ac_html=""
+  if [[ -n "$ac_file" ]]; then
+    local ac_raw
+    ac_raw=$(cat "$ac_file")
+    ac_html=$(_markdown_to_html "$ac_raw")
+  fi
+
   # Show preview and get confirmation
   _ado_preview_and_confirm "$wi_type" "$title" "$parent" "$desc_html" "collected_fields" "$assume_yes" || {
     log_info "Creation cancelled"
@@ -591,6 +821,12 @@ _ado_create() {
   if [[ -n "$desc_html" ]]; then
     local esc_desc=$(_json_escape "$desc_html")
     body+=",{\"op\":\"add\",\"path\":\"/fields/System.Description\",\"value\":\"${esc_desc}\"}"
+  fi
+
+  # Add acceptance criteria if provided (using Microsoft.VSTS.Common.AcceptanceCriteria field)
+  if [[ -n "$ac_html" ]]; then
+    local esc_ac=$(_json_escape "$ac_html")
+    body+=",{\"op\":\"add\",\"path\":\"/fields/Microsoft.VSTS.Common.AcceptanceCriteria\",\"value\":\"${esc_ac}\"}"
   fi
 
   # Add collected fields
@@ -1025,23 +1261,28 @@ _ado_push_story() {
 
   log_info "Title: $title"
 
-  # Create temporary description file combining description and criteria
+  # Create temporary description file (description only, AC goes to separate field)
   local temp_desc
   temp_desc="$(mktemp 2>/dev/null || echo "${TMPDIR:-/tmp}/sdlc-story-desc-$$.md")"
   {
     if [[ -n "$desc_section" ]]; then
       echo "$desc_section"
-      echo ""
-    fi
-    if [[ -n "$criteria_section" ]]; then
-      echo "## Acceptance Criteria"
-      echo "$criteria_section"
     fi
   } > "$temp_desc"
 
-  # Create work item with description (optional parent = Feature/User Story/Epic above this item)
+  # Create temporary acceptance criteria file
+  local temp_ac=""
+  if [[ -n "$criteria_section" ]]; then
+    temp_ac="$(mktemp 2>/dev/null || echo "${TMPDIR:-/tmp}/sdlc-story-ac-$$.md")"
+    echo "$criteria_section" > "$temp_ac"
+  fi
+
+  # Create work item with description and acceptance criteria
   local wi_id
   local create_args=("$create_type" "--title=$title" "--description-file=$temp_desc")
+  if [[ -n "$temp_ac" ]]; then
+    create_args+=("--acceptance-criteria-file=$temp_ac")
+  fi
   if [[ -n "$parent" ]]; then
     create_args+=("--parent=$parent")
   fi
@@ -1049,11 +1290,11 @@ _ado_push_story() {
     create_args+=("--yes")
   fi
   wi_id=$(_ado_create "${create_args[@]}") || {
-    rm -f "$temp_desc" 2>/dev/null || true
+    rm -f "$temp_desc" "$temp_ac" 2>/dev/null || true
     return 1
   }
 
-  rm -f "$temp_desc" 2>/dev/null || true
+  rm -f "$temp_desc" "$temp_ac" 2>/dev/null || true
 
   log_success "Work item created in ADO: $wi_id"
   echo "$wi_id"
