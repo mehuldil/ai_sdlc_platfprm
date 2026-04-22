@@ -102,27 +102,41 @@ function loadDocs() {
       missing.push(f);
       continue;
     }
+    const markdown = fs.readFileSync(p, "utf8");
+    const headers = extractHeaders(markdown);
+
     docs.push({
       file: f,
       slug: slugFor(f),
       title: titleFor(f),
-      markdown: fs.readFileSync(p, "utf8"),
+      markdown: markdown,
+      headers: headers,
     });
   }
   return { docs, missing };
 }
 
 function readVersion() {
-  const p = path.join(UM, "VERSION");
-  if (!fs.existsSync(p)) return "0.0.0";
-  // strip BOM + CR/LF
-  const raw = fs.readFileSync(p, "utf8").replace(/^\uFEFF/, "").trim();
-  // If the file was encoded as UTF-16 LE, node's "utf8" read shows zero bytes
-  // between digits — detect and clean.
-  if (/\u0000/.test(raw)) {
-    return raw.replace(/\u0000/g, "").trim();
+  // Try VERSION file first (backward compatibility)
+  const versionFile = path.join(UM, "VERSION");
+  if (fs.existsSync(versionFile)) {
+    const raw = fs.readFileSync(versionFile, "utf8").replace(/^\uFEFF/, "").trim();
+    if (/\u0000/.test(raw)) {
+      return raw.replace(/\u0000/g, "").trim();
+    }
+    if (raw && raw !== "0.0.0") return raw;
   }
-  return raw;
+
+  // Auto-detect from CHANGELOG.md header
+  const changelogPath = path.join(UM, "CHANGELOG.md");
+  if (fs.existsSync(changelogPath)) {
+    const content = fs.readFileSync(changelogPath, "utf8");
+    // Match ## [2.1.4] format
+    const match = content.match(/##\s*\[(\d+\.\d+\.\d+)\]/);
+    if (match) return match[1];
+  }
+
+  return "0.0.0";
 }
 
 function readClient() {
@@ -133,9 +147,226 @@ function readClient() {
   return fs.readFileSync(p, "utf8");
 }
 
+function readPrismJS() {
+  // Read and concatenate Prism core + components
+  const files = [
+    "prism-core.js",
+    "prism-bash.js",
+    "prism-javascript.js",
+    "prism-python.js",
+    "prism-json.js",
+    "prism-yaml.js"
+  ];
+  let code = "";
+  for (const f of files) {
+    const p = path.join(UM, f);
+    if (fs.existsSync(p)) {
+      code += fs.readFileSync(p, "utf8") + "\n";
+    }
+  }
+  return code;
+}
+
+function readPrismCSS() {
+  const p = path.join(UM, "prism-tomorrow.css");
+  if (!fs.existsSync(p)) return "";
+  return fs.readFileSync(p, "utf8");
+}
+
+function extractHeaders(markdown) {
+  // Extract headers (# ## ###) from markdown for TOC
+  const headers = [];
+  const lines = markdown.split("\n");
+  for (const line of lines) {
+    const match = line.match(/^(#{1,3})\s+(.+)$/);
+    if (match) {
+      const level = match[1].length;
+      const text = match[2].replace(/\s*#+\s*$/, "").trim(); // Remove trailing hashes
+      const anchor = text.toLowerCase()
+        .replace(/[^\w\s-]/g, "")
+        .replace(/\s+/g, "-")
+        .substring(0, 50);
+      headers.push({ level, text, anchor });
+    }
+  }
+  return headers;
+}
+
+function buildSearchIndex(docs) {
+  // Build inverted index for full-text search
+  const index = new Map();
+  const docWordPositions = new Map(); // Track positions for highlighting
+
+  for (const doc of docs) {
+    const slug = doc.slug;
+    const content = doc.markdown.toLowerCase();
+
+    // Extract words (3+ chars, alphanumeric)
+    const words = content.match(/\b[a-z][a-z0-9]{2,}\b/g) || [];
+
+    // Track word frequencies and positions
+    const wordFreq = new Map();
+    const wordPositions = new Map();
+
+    for (let i = 0; i < words.length; i++) {
+      const word = words[i];
+
+      // Skip common stop words
+      if (stopWords.has(word)) continue;
+
+      // Track frequency
+      wordFreq.set(word, (wordFreq.get(word) || 0) + 1);
+
+      // Track positions
+      if (!wordPositions.has(word)) wordPositions.set(word, []);
+      wordPositions.get(word).push(i);
+
+      // Add to global index
+      if (!index.has(word)) index.set(word, new Set());
+      index.get(word).add(slug);
+    }
+
+    // Store per-doc word data
+    docWordPositions.set(slug, {
+      frequencies: Object.fromEntries(wordFreq),
+      positions: Object.fromEntries(
+        Array.from(wordPositions.entries()).map(([k, v]) => [k, v.slice(0, 10)]) // Limit positions
+      )
+    });
+  }
+
+  // Convert Sets to Arrays for JSON serialization
+  const serializableIndex = {};
+  for (const [word, slugs] of index) {
+    serializableIndex[word] = Array.from(slugs);
+  }
+
+  return {
+    index: serializableIndex,
+    docData: Object.fromEntries(docWordPositions)
+  };
+}
+
+// Common English stop words to exclude from search index
+const stopWords = new Set([
+  "the", "and", "for", "are", "but", "not", "you", "all", "can", "her", "was", "one", "our", "out", "day", "get", "has", "him", "his", "how", "man", "new", "now", "old", "see", "two", "way", "who", "boy", "did", "its", "let", "put", "say", "she", "too", "use", "with", "have", "this", "will", "your", "from", "they", "know", "want", "been", "good", "much", "some", "time", "very", "when", "come", "here", "just", "like", "long", "make", "many", "over", "such", "take", "than", "them", "well", "were", "what", "look", "more", "only", "other", "after", "back", "call", "came", "come", "could", "down", "find", "first", "give", "into", "little", "make", "most", "must", "never", "next", "only", "over", "said", "should", "some", "sound", "still", "such", "take", "than", "that", "their", "them", "then", "there", "these", "they", "thing", "this", "those", "through", "time", "very", "want", "water", "went", "were", "what", "when", "where", "which", "while", "white", "will", "with", "work", "would", "write", "year", "you", "about"
+]);
+
 /* ------------------------------------------------------------------ */
 /* HTML shell                                                          */
 /* ------------------------------------------------------------------ */
+
+// Prism CSS for syntax highlighting (injected after main CSS)
+const PRISM_CSS_ADDITION = `
+/* Prism.js tomorrow night theme - customized for dark mode */
+code[class*="language-"],
+pre[class*="language-"] {
+  color: #ccc;
+  background: none;
+  font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+  font-size: 0.9em;
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  word-wrap: normal;
+  line-height: 1.5;
+  tab-size: 4;
+  hyphens: none;
+}
+
+pre[class*="language-"] {
+  padding: 1em;
+  margin: 0.5em 0;
+  overflow: auto;
+  background: #0a0a0c;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+}
+
+:not(pre) > code[class*="language-"] {
+  padding: 0.1em 0.3em;
+  border-radius: 0.3em;
+  background: rgba(255,255,255,0.1);
+  white-space: normal;
+}
+
+.token.comment,
+.token.block-comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: #999;
+}
+
+.token.punctuation {
+  color: #ccc;
+}
+
+.token.tag,
+.token.attr-name,
+.token.namespace,
+.token.deleted {
+  color: #e2777a;
+}
+
+.token.function-name {
+  color: #6196cc;
+}
+
+.token.boolean,
+.token.number,
+.token.function {
+  color: #f08d49;
+}
+
+.token.property,
+.token.class-name,
+.token.constant,
+.token.symbol {
+  color: #f8c555;
+}
+
+.token.selector,
+.token.important,
+.token.atrule,
+.token.keyword,
+.token.builtin {
+  color: #cc99cd;
+}
+
+.token.string,
+.token.char,
+.token.attr-value,
+.token.regex,
+.token.variable {
+  color: #7ec699;
+}
+
+.token.operator,
+.token.entity,
+.token.url {
+  color: #67cdcc;
+}
+
+.token.important,
+.token.bold {
+  font-weight: bold;
+}
+
+.token.italic {
+  font-style: italic;
+}
+
+.token.entity {
+  cursor: help;
+}
+
+.token.inserted {
+  color: green;
+}
+`;
+
 const CSS = `
 :root {
   --space: 8px;
@@ -573,8 +804,8 @@ mark.manual-hit {
 `;
 
 /* ------------------------------------------------------------------ */
-function buildHtml({ version, docs, clientJs }) {
-  const payload = JSON.stringify({ version, docs }).replace(/</g, "\\u003c");
+function buildHtml({ version, docs, clientJs, prismJs, searchIndex }) {
+  const payload = JSON.stringify({ version, docs, searchIndex }).replace(/</g, "\\u003c");
   const encV = esc(version);
   return `<!DOCTYPE html>
 <html lang="en">
@@ -582,13 +813,13 @@ function buildHtml({ version, docs, clientJs }) {
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="AI-SDLC Platform — interactive offline user manual (v${encV})" />
-  <meta name="generator" content="User_Manual/build-manual-html.mjs v2.1.1" />
+  <meta name="generator" content="User_Manual/build-manual-html.mjs v2.1.4" />
   <meta name="theme-color" content="#0c0c0e" />
   <title>AI-SDLC User Manual · v${encV}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400..600;1,14..32,400..600&display=swap" rel="stylesheet" />
-  <style>${CSS}</style>
+  <style>${CSS}${PRISM_CSS_ADDITION}</style>
 </head>
 <body>
   <div class="app">
@@ -649,6 +880,9 @@ function buildHtml({ version, docs, clientJs }) {
 
   <script type="application/json" id="manual-data">${payload}</script>
   <script>
+// Prism.js syntax highlighter
+${prismJs}
+// Client application
 ${clientJs}
   </script>
 </body>
@@ -666,7 +900,9 @@ function main() {
   const version = readVersion();
   const { docs, missing } = loadDocs();
   const clientJs = readClient();
-  const html = buildHtml({ version, docs, clientJs });
+  const prismJs = readPrismJS();
+  const searchIndex = buildSearchIndex(docs);
+  const html = buildHtml({ version, docs, clientJs, prismJs, searchIndex });
 
   if (missing.length) {
     console.warn(
