@@ -131,7 +131,7 @@ The AI-SDLC Platform uses a **dual-layer memory system** for cross-team collabor
 
 ```
 Local (not in git):
-  c:\JioCloudCursor\AISDLC\stories\
+  c:\yourcloudCursor\AISDLC\stories\
   ├── FH-001-master-family-hub-phase1.md
   ├── FH-001-S01-sprint-hub-creation-invite.md
   └── FH-001-S02-sprint-member-management.md
@@ -163,7 +163,7 @@ Platform repo (git-tracked):
 
 1. **Clone the platform repo**:
    ```bash
-   git clone https://dev.azure.com/JPL-Limited/JioAIphotos/_git/AI-sdlc-platform
+   git clone https://dev.azure.com/YourOrg/YourProject/_git/AI-sdlc-platform
    ```
 
 2. **Initialize memory**:
