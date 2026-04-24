@@ -429,10 +429,10 @@ After implementing these changes:
 ```bash
 # 1. Test state persistence
 sdlc init
-sdlc use backend --stack=java-tej
-sdlc context  # Should show backend, java-tej
+sdlc use backend --stack=java
+sdlc context  # Should show backend, java
 # Kill shell and restart
-sdlc context  # Should still show backend, java-tej ✓
+sdlc context  # Should still show backend, java ✓
 
 # 2. Test token blocking
 sdlc run 05 --role=product  # Should check token budget

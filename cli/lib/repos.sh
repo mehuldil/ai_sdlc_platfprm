@@ -48,7 +48,7 @@ _repos_detect_info() {
     
     # Only detect if it's a real project
     if [[ -f "$path/pom.xml" ]] || [[ -f "$path/build.gradle" ]] || [[ -f "$path/build.gradle.kts" ]]; then
-        stack="java-tej"
+        stack="java"
         type="microservice"
         detected="true"
     elif [[ -f "$path/package.json" ]]; then

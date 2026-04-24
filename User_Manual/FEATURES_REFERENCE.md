@@ -75,7 +75,7 @@ A **workflow** (flow) is a **named sequence** of stages for a scenario (full SDL
 
 ### What it is
 
-**Role** answers: “Who am I *for the AI*?” (product, backend, qa, tpm, …). **Stack** answers: “Which technology lane?” (java-tej, kotlin-android, …). Together they **select** which rules, stage variants, and playbook text apply — they do not change your HR job title.
+**Role** answers: “Who am I *for the AI*?” (product, backend, qa, tpm, …). **Stack** answers: “Which technology lane?” (java, kotlin-android, …). Together they **select** which rules, stage variants, and playbook text apply — they do not change your HR job title.
 
 ### How it works
 

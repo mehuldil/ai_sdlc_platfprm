@@ -29,7 +29,7 @@ cd ai-sdlc-platform
 ```bash
 cd your-project
 sdlc doctor              # Verify setup
-sdlc use backend --stack=java-tej  # Set your role
+sdlc use backend --stack=java  # Set your role
 ```
 
 ---
@@ -71,7 +71,7 @@ sdlc run 08-implementation
 
 | Role | First Command |
 |------|---------------|
-| **Backend** | `sdlc use backend --stack=java-tej` |
+| **Backend** | `sdlc use backend --stack=java` |
 | **Frontend** | `sdlc use frontend --stack=react-native` |
 | **QA** | `sdlc use qa` |
 | **Product** | `sdlc use product` |

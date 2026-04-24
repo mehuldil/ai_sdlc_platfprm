@@ -54,7 +54,7 @@ Canonical role definitions: **`roles/<name>.md`** (`product`, `backend`, `fronte
 | **Typical chain** | Validate blockers / dependencies → facilitate estimation → align ADO links → escalate integration risks → **sign-off** with PM/QA on release readiness. |
 | **Approves** | Dependency resolution, release sequencing (with PM/Boss). |
 
-### 3.3 Backend (`sdlc use backend --stack=java-tej` or your stack)
+### 3.3 Backend (`sdlc use backend --stack=java` or your stack)
 
 | | |
 |--|--|

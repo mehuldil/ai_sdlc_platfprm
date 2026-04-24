@@ -29,7 +29,7 @@ Gate validation:
 
 **Example:**
 ```
-Role: Backend | Stack: java-tej | Stage: 03-system-design
+Role: Backend | Stack: java | Stage: 03-system-design
 Story: US-1234 | Route: NEW_FEATURE | Gate: FULL
 Memory: .sdlc/memory/02-prd-review-completion.md
 ---
@@ -141,7 +141,7 @@ Suggestions: Flag NO for future sprint.
 **Example:**
 ```
 PR: 2456 | Files: 5
-Stack: java-tej | Variant: java-backend
+Stack: java | Variant: java-backend
 Focus: security
 ---
 Review 5 files for security gaps.
@@ -189,7 +189,7 @@ Return:
 Type: User Story
 Title: US-1234 | Phone verification (Sprint 12)
 Parent: ONBOARD-AUTH (Epic)
-Stack: java-tej
+Stack: java
 Fields: 
   Description: "Enable users to verify phone via OTP"
   Story Points: 5

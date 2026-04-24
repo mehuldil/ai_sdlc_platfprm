@@ -498,7 +498,7 @@ if [[ -f "${PLATFORM_ROOT}/cli/lib/repos.sh" ]]; then
           # Check if already registered
           if ! grep -q "\"$repo_id\"" "$REPOS_FILE" 2>/dev/null; then
             local stack="unknown"
-            [[ -f "$repo_path/pom.xml" ]] && stack="java-tej"
+            [[ -f "$repo_path/pom.xml" ]] && stack="java"
             [[ -f "$repo_path/package.json" ]] && stack="javascript"
             [[ -f "$repo_path/go.mod" ]] && stack="go"
             
@@ -521,9 +521,9 @@ if [[ -f "${PLATFORM_ROOT}/cli/lib/repos.sh" ]]; then
   CURRENT_REPO_ID=$(basename "$PROJECT_PATH" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g')
   if ! grep -q "\"$CURRENT_REPO_ID\"" "$REPOS_FILE" 2>/dev/null; then
     CURRENT_STACK="unknown"
-    [[ -f "$PROJECT_PATH/pom.xml" ]] && CURRENT_STACK="java-tej"
+    [[ -f "$PROJECT_PATH/pom.xml" ]] && CURRENT_STACK="java"
     [[ -f "$PROJECT_PATH/package.json" ]] && CURRENT_STACK="javascript"
-    [[ -f "$PROJECT_PATH/build.gradle" ]] && CURRENT_STACK="java-tej"
+    [[ -f "$PROJECT_PATH/build.gradle" ]] && CURRENT_STACK="java"
     
     tmp=$(mktemp)
     jq ".repos += [{id: \"$CURRENT_REPO_ID\", name: \"$CURRENT_REPO_ID\", path: \"$PROJECT_PATH\", type: \"microservice\", stack: \"$CURRENT_STACK\", detected: \"true\", dependencies: [], dependents: [], team: \"default\", ado_project: \"\", active: true}] | .default_repo = \"$CURRENT_REPO_ID\"" "$REPOS_FILE" > "$tmp"
@@ -597,7 +597,7 @@ echo -e "    'Review the PRD for AB#12345 from backend perspective'"
 echo -e "    'Create a master story for multi-language signup'"
 echo ""
 echo -e "  ${CYAN}In terminal:${NC}"
-echo -e "    sdlc use backend --stack=java-tej"
+echo -e "    sdlc use backend --stack=java"
 echo -e "    sdlc run 01-requirement-intake"
 echo -e "    sdlc context"
 echo -e "    sdlc repos list              # Show all your repos"

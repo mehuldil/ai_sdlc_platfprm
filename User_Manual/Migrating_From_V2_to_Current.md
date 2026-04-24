@@ -11,7 +11,7 @@ This guide is for teams currently using **AI-SDLC-Platform V2** who need to migr
 | **Context loading** | Load everything, filter later | 3-tier progressive loading (base → stage → skills) | Update your `.sdlc/config` with `loading_strategy: tiered` |
 | **Token budgets** | Per-stage soft limits | Enforced per-role daily/sprint budgets | Run `sdlc budget init` to set your team budgets |
 | **Memory storage** | SQLite + JSONL in `.sdlc/memory/` | Same, but with **git-sync tracking** | Run `sdlc memory migrate` to add sync metadata |
-| **Agent registry** | Single `agent-registry.json` | **Stack-specific registries** (e.g., `agents/java-tej/registry.json`) | Re-run `sdlc use <role> --stack=<stack>` to regenerate links |
+| **Agent registry** | Single `agent-registry.json` | **Stack-specific registries** (e.g., `agents/java/registry.json`) | Re-run `sdlc use <role> --stack=<stack>` to regenerate links |
 | **Stage variants** | All in one `STAGE.md` | **Split by stack** in `variants/` subdirectories | No action — automatic fallback |
 | **CLI commands** | `sdlc run <stage>` works | **Same**, but with token pre-check | Update scripts that bypass CLI (use `sdlc run --force` if needed) |
 | **Hooks** | 23 separate hook scripts | **Consolidated** to 12 core hooks | Re-run `./setup.sh` to update hooks |
@@ -84,7 +84,7 @@ This guide is for teams currently using **AI-SDLC-Platform V2** who need to migr
    ```
    agents/
    ├── backend/
-   │   ├── java-tej/
+   │   ├── java/
    │   │   ├── agent-registry.json     # NEW: Stack-specific
    │   │   └── agents/
    ├── shared/
@@ -205,7 +205,7 @@ sdlc doctor
 
 Your usual commands work the same:
 ```bash
-sdlc use backend --stack=java-tej
+sdlc use backend --stack=java
 sdlc run 08-implementation
 sdlc story push ./stories/...
 ```
@@ -251,7 +251,7 @@ Error: Agent 'java-backend-engineer' not found in registry
 **Fix:**
 ```bash
 # Re-set your role to regenerate registry links
-sdlc use backend --stack=java-tej --refresh
+sdlc use backend --stack=java --refresh
 ```
 
 ### Issue: Hooks not firing

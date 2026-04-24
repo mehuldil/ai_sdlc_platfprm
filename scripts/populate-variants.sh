@@ -5,7 +5,7 @@ set -e
 
 BASE_DIR=".claude/templates"
 VARIANTS_DIR="stages"
-STACKS=("java-tej" "python-django" "nodejs-express" "dotnet-core" "go-echo" "rust")
+STACKS=("java" "python-django" "nodejs-express" "dotnet-core" "go-echo" "rust")
 
 # Stage-specific variant content factory
 generate_variant_content() {
@@ -17,7 +17,7 @@ generate_variant_content() {
     case $stage_num in
         "01")
             case $stack in
-                "java-tej") echo "# Stage 01: Requirement Intake (Java-TEJ)
+                "java") echo "# Stage 01: Requirement Intake (java)
 ## Stack-Specific Considerations
 Java with Spring Boot is enterprise-ready. Intake should identify: Spring Boot version, existing service mesh (Istio?), monolith vs microservice, database choice.
 
@@ -152,7 +152,7 @@ Scope clear + Rust toolchain confirmed + performance needs defined" ;;
             esac ;;
         "03")
             case $stack in
-                "java-tej") echo "# Stage 03: Architecture Review (Java-TEJ)
+                "java") echo "# Stage 03: Architecture Review (java)
 ## Stack-Specific Considerations
 Spring Boot architecture: microservices, event-driven with Kafka, REST APIs, Database per service pattern.
 

@@ -11,7 +11,7 @@
 |------|---------------|----------------|----------------------------------|--------------------------------|
 | Get the platform | Clone **`ai-sdlc-platform`** from Azure DevOps ([URL](https://github.com/YOUR_GITHUB_USER/ai_sdlc_platform.git)); clone your **app repo** too if separate. | `git clone https://github.com/YOUR_GITHUB_USER/ai_sdlc_platform.git` → `cd AI-sdlc-platform` → `./setup.sh` or `./setup.sh /path/to/app` | Open repo in IDE → ask to **run setup** | “Install SDLC” / “Run `./setup.sh` for this project” |
 | Check health | Confirms tools, hooks, docs, ADO env (if set). | `sdlc doctor` | Ask: **“Run sdlc doctor”** | “Diagnose SDLC setup” |
-| Pick who you are | Role drives rules and suggestions (e.g. backend vs QA). | `sdlc use backend --stack=java-tej` (example) | — | “Set my role to backend, stack java-tej” |
+| Pick who you are | Role drives rules and suggestions (e.g. backend vs QA). | `sdlc use backend --stack=java` (example) | — | “Set my role to backend, stack java” |
 | Azure DevOps (optional) | Needed to push stories / sync work items. | Edit `env/.env`: `ADO_PAT`, `ADO_ORG`, `ADO_PROJECT` | Paste PAT only in secure chat if your policy allows | “Help me configure ADO in env/.env” |
 
 **Cursor / agent setup (no keyboard on the script):** If the assistant runs `./setup.sh` or `sdlc-setup.sh` for you, the shell often has **no TTY**. Use **AskQuestion** in chat for role, stack, and ADO, then re-run with **`SDL_SETUP_*`** and **`ADO_*`** exports (see **`cli/sdlc-setup.sh --help`** and [INDEX](INDEX.md)).
@@ -160,7 +160,7 @@ See [Guided_Execution_and_Recovery](Guided_Execution_and_Recovery.md) — **ASK 
 ```bash
 # From app repo root, with sdlc on PATH
 sdlc doctor
-sdlc use backend --stack=java-tej   # example
+sdlc use backend --stack=java   # example
 sdlc doc convert ./path/to/PRD.docx
 sdlc module init .
 sdlc module load api

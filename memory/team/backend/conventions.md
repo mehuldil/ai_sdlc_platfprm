@@ -2,7 +2,7 @@
 
 **Team**: Backend  
 **Last Updated**: 2026-04-10  
-**Governed By**: stacks/java-tej/conventions.md  
+**Governed By**: stacks/java/conventions.md  
 
 ---
 
@@ -45,4 +45,4 @@
 
 ---
 
-**See Also**: stacks/java-tej/ directory for detailed standards
+**See Also**: stacks/java/ directory for detailed standards

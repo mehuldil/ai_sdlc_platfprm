@@ -135,7 +135,7 @@ For each gate (G1-G10):
    - IDE-invoked shells have no TTY; `read` in bash cannot receive chat input
    - User keyboard in chat is NOT connected to process stdin
 3. **After the user answers**, run the appropriate non-interactive command:
-   - Example: `sdlc use backend --stack=java-tej`
+   - Example: `sdlc use backend --stack=java`
    - Example: `sdlc run 05-system-design --story=US-851789`
 4. **Secrets:** Never ask for ADO PAT or credentials in chat
    - Direct users to `env/.env` and `env/env.template`

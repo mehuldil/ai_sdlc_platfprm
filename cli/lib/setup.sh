@@ -315,7 +315,7 @@ MEMEOF
   log_info "  3. Reload MCP in Cursor if you use Azure DevOps tools"
   echo ""
   log_info "Roles: product | backend | frontend | qa | performance | ui | tpm | boss"
-  log_info "Stacks: java-tej | kotlin-android | swift-ios | react-native | jmeter | figma-design"
+  log_info "Stacks: java | kotlin-android | swift-ios | react-native | jmeter | figma-design"
 }
 
 _setup_ide_links() {

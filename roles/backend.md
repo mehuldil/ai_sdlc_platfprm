@@ -1,7 +1,7 @@
 ---
 name: backend
 display: Backend Developer
-default_stack: java-tej
+default_stack: java
 default_workflow: dev-cycle
 model_preference: powerful
 ---

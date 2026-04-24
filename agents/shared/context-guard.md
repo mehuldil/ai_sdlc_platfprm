@@ -78,7 +78,7 @@ User can switch roles at any time:
 When role is backend/frontend/qa/performance and no stack is set:
 > "Which tech stack? This loads stack-specific rules, conventions, and variants."
 >
-> 1) java-tej — Java 17 + RestExpress microservices
+> 1) java — Java 17 + RestExpress microservices
 > 2) kotlin-android — Kotlin + Android MVVM
 > 3) swift-ios — Swift + iOS async/await
 > 4) react-native — React Native + TypeScript

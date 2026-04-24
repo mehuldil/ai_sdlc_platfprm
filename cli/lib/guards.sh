@@ -30,7 +30,7 @@ _sdlc_print_ask_in_chat_stack() {
   echo "" >&2
   echo -e "  ${CYAN}ASK in chat:${NC} Choose your stack in the chat panel." >&2
   echo "  Then run, e.g.:" >&2
-  echo -e "    ${GREEN}sdlc use ${SDLC_ROLE:-<role>} --stack=java-tej${NC}" >&2
+  echo -e "    ${GREEN}sdlc use ${SDLC_ROLE:-<role>} --stack=java${NC}" >&2
   echo "" >&2
   echo "  Stacks: ${STACKS[*]}  (use 0 in terminal only to skip)" >&2
   log_recovery_footer

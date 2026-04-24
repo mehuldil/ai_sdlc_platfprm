@@ -5,7 +5,7 @@
 ### Context Management
 ```bash
 sdlc use <role>                    # Switch role
-sdlc use backend --stack=java-tej  # Role + stack
+sdlc use backend --stack=java  # Role + stack
 sdlc context                       # Show current role/stack/stage
 sdlc init                          # Initialize context
 ```

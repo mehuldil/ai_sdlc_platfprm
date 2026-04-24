@@ -27,7 +27,7 @@ V1 **teams** map to V2 **roles** as follows:
 
 | V1 team (`setup.sh`) | V2 role (`sdlc use …`) | Notes |
 |----------------------|------------------------|--------|
-| `backend` | `backend` | Choose stack, e.g. `--stack=java-tej` |
+| `backend` | `backend` | Choose stack, e.g. `--stack=java` |
 | `frontend` | `frontend` | Stack e.g. React Native |
 | `qa` | `qa` | QA orchestrator + skills unified in V2 |
 | `product` | `product` | PM / PRD flows |
@@ -96,7 +96,7 @@ after first use to confirm the semantic store initialized.
 ### Step F — Select role and validate
 
 ```bash
-sdlc use backend --stack=java-tej   # example
+sdlc use backend --stack=java   # example
 sdlc context
 sdlc doctor
 ```

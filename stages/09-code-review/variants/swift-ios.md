@@ -135,7 +135,7 @@ Links to relevant docs for this stack + stage:
 - Link 2
 
 **Example for Java Stage 08**:
-- [Java TEJ Stack Guide](../../stacks/java-tej/conventions.md)
+- [Java TEJ Stack Guide](../../stacks/java/conventions.md)
 - [OpenAPI 3.0 Spec](https://swagger.io/specification/)
 - [JUnit 5 Documentation](https://junit.org/junit5/)
 - [Gradle Best Practices](https://gradle.org/guides/)
@@ -153,7 +153,7 @@ Contact: [TBD](mailto:owner@example.com)
 Use variant names from **cli/sdlc.sh** `STACK_VARIANT_MAP`:
 
 ```bash
-["java-tej"]="java-backend"
+["java"]="java-backend"
 ["kotlin-android"]="kotlin-android"
 ["swift-ios"]="swift-ios"
 ["react-native"]="react-native"
@@ -179,7 +179,7 @@ If stack has no special considerations for a stage, minimal variant:
 # Java Backend: Stage 12 Commit/Push
 
 **Stage**: 12-commit-push  
-**Stack**: java-tej  
+**Stack**: java  
 **Token Budget**: 500 tokens  
 
 ## Overview

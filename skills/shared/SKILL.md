@@ -54,7 +54,7 @@ Perform structured code review across multiple files.
 ```bash
 sdlc skills invoke code-review \
   --files=src/**/*.java \
-  --stack=java-tej \
+  --stack=java \
   --role=backend
 ```
 

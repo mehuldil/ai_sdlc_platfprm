@@ -76,7 +76,7 @@ stages/08-implementation/STAGE.md
 When a team runs `./setup.sh`, they specify:
 
 ```bash
-$ ./setup.sh /path/to/app --role backend-engineer --stack java-tej
+$ ./setup.sh /path/to/app --role backend-engineer --stack java
 ```
 
 The platform creates **symlinks only for relevant files**:

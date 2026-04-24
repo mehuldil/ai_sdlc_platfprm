@@ -7,7 +7,7 @@
 #
 # Examples:
 #   ./run-as.sh backend                  # Set role to backend
-#   ./run-as.sh backend java-tej         # Set role + stack
+#   ./run-as.sh backend java         # Set role + stack
 #   ./run-as.sh product                  # Set role to product (no stack needed)
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -25,7 +25,7 @@ if [ -z "$ROLE" ]; then
   echo "Usage: ./run-as.sh <role> [stack] [project-path]"
   echo ""
   echo "Roles: product, backend, frontend, ui, tpm, qa, performance, boss"
-  echo "Stacks: java-tej, kotlin-android, swift-ios, react-native, jmeter, figma-design"
+  echo "Stacks: java, kotlin-android, swift-ios, react-native, jmeter, figma-design"
   exit 1
 fi
 

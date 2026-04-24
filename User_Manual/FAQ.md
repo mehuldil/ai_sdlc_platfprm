@@ -77,7 +77,7 @@ Think of it as a **smart assistant that knows your codebase**. Instead of explai
 ```
 Morning:
 1. Open your feature branch
-2. Run: sdlc use backend --stack=java-tej
+2. Run: sdlc use backend --stack=java
 3. Work on your story (AB#12345)
 
 During development:
@@ -299,7 +299,7 @@ Check supported roles: product, backend, frontend, qa, ui, tpm, performance, bos
 ## Stage Execution
 
 **Q: Stage fails with "context missing"**
-Set role first: `sdlc use backend --stack=java-tej`
+Set role first: `sdlc use backend --stack=java`
 
 **Q: Command failed with "ASK in chat" or I don't know what to run next**
 See **[Guided_Execution_and_Recovery](Guided_Execution_and_Recovery.md)** — use the printed `sdlc` lines, run `sdlc context`, then `sdlc doctor`. In IDE chat, ask the assistant to read the error and give the **exact** next commands (non-interactive terminals cannot prompt).

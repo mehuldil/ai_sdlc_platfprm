@@ -71,7 +71,7 @@ After any bulk run, **`cd` into each service repo** and run **`sdlc doctor`** (a
 ## First Run
 
 ```bash
-sdlc use backend --stack=java-tej   # Select role + stack
+sdlc use backend --stack=java   # Select role + stack
 sdlc context                         # Verify setup
 sdlc run 08-implementation           # Run a stage
 ```

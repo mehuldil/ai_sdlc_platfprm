@@ -109,7 +109,7 @@ echo ""
 echo "Context commands:"
 assert_exit_0       "sdlc context"           bash "$SDLC" context
 assert_exit_0       "sdlc use product"       bash "$SDLC" use product
-assert_exit_0       "sdlc use backend --stack=java-tej" bash "$SDLC" use backend --stack=java-tej
+assert_exit_0       "sdlc use backend --stack=java" bash "$SDLC" use backend --stack=java
 
 # --- Catalog commands ---
 echo ""

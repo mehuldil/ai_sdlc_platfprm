@@ -112,7 +112,7 @@ sdlc repos list
 
 ```bash
 # Set your role
-sdlc use backend --stack=java-tej
+sdlc use backend --stack=java
 sdlc use frontend --stack=react
 sdlc use qa
 sdlc use product
@@ -275,7 +275,7 @@ sdlc run 04-grooming --story=AB#12345
 
 ```bash
 # Backend design
-sdlc use backend --stack=java-tej
+sdlc use backend --stack=java
 sdlc run 05-system-design --story=AB#12345
 
 # Frontend design  
@@ -837,11 +837,11 @@ sdlc repos notify tej-security
 sdlc repos list
 
 # Output:
-# → tej-auth-service (java-tej)
+# → tej-auth-service (java)
 #    Path: ~/projects/TejAuthService
 #    Deps: tej-security
 # 
-#   tej-security (java-tej)
+#   tej-security (java)
 #    Path: ~/projects/TejSecurityServices
 #    Used by: tej-auth-service, tej-user-profile
 

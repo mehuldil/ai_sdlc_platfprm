@@ -34,11 +34,11 @@ STAGES=(
 )
 
 # Tech stacks (6)
-STACKS=(java-tej kotlin-android swift-ios react-native jmeter figma-design)
+STACKS=(java kotlin-android swift-ios react-native jmeter figma-design)
 
 # Stack → variant filename mapping
 declare -A STACK_VARIANT_MAP=(
-  [java-tej]="java-backend"
+  [java]="java-backend"
   [kotlin-android]="kotlin-android"
   [swift-ios]="swift-ios"
   [react-native]="react-native"

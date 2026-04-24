@@ -8,7 +8,7 @@ Works in: Cursor IDE chat + Claude Code + CLI
 
 ```
 /project:system-design AB#123
-/project:system-design AB#123 --role=backend --variant=java-tej
+/project:system-design AB#123 --role=backend --variant=java
 /project:system-design AB#123 --create-api-spec
 ```
 
@@ -172,7 +172,7 @@ User: [1]
 ## CLI Mode
 
 ```bash
-$ sdlc skill system-design AB#123 --role=backend --variant=java-tej
+$ sdlc skill system-design AB#123 --role=backend --variant=java
 $ sdlc skill system-design AB#123 --create-api-spec --create-erd
 $ sdlc skill system-design --sprint=12 --auto-create
 ```

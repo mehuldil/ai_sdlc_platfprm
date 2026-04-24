@@ -95,7 +95,7 @@ Search does **not** query your project, Azure DevOps, or local SQLite — only t
 |------|----------------|
 | **Stage** | A lifecycle step (01–15). Run with `sdlc run` and a stage id, or a `/project:…` slash command. |
 | **Role** | Persona for the AI (`sdlc use`). Changes which rules and playbooks apply. |
-| **Stack** | Tech lane (e.g. java-tej). Refines implementation guidance. |
+| **Stack** | Tech lane (e.g. java). Refines implementation guidance. |
 | **Workflow / flow** | Named bundle of stages (`sdlc flow list`). |
 | **Module / KB** | Code-derived facts under `.sdlc/module/` (`sdlc module init`). |
 | **Semantic memory** | Decision-derived facts; SQLite locally; team JSONL in git. |

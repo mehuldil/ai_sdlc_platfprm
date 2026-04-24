@@ -407,7 +407,7 @@ cd ai_sdlc_platform</code></pre>
 
 <h2>Glossary (short)</h2>
 
-<table><tr><th>Term</th><th>Plain meaning</th></tr><tr><td><strong>Stage</strong></td><td>A lifecycle step (01–15). Run with <code>sdlc run</code> and a stage id, or a <code>/project:…</code> slash command.</td></tr><tr><td><strong>Role</strong></td><td>Persona for the AI (<code>sdlc use</code>). Changes which rules and playbooks apply.</td></tr><tr><td><strong>Stack</strong></td><td>Tech lane (e.g. java-tej). Refines implementation guidance.</td></tr><tr><td><strong>Workflow / flow</strong></td><td>Named bundle of stages (<code>sdlc flow list</code>).</td></tr><tr><td><strong>Module / KB</strong></td><td>Code-derived facts under <code>.sdlc/module/</code> (<code>sdlc module init</code>).</td></tr><tr><td><strong>Semantic memory</strong></td><td>Decision-derived facts; SQLite locally; team JSONL in git.</td></tr><tr><td><strong>MCP</strong></td><td>IDE tools exposed to the model (ADO, wiki, …).</td></tr><tr><td><strong>ASK</strong></td><td>CLI cannot prompt → confirm next step in chat with your assistant.</td></tr></table>
+<table><tr><th>Term</th><th>Plain meaning</th></tr><tr><td><strong>Stage</strong></td><td>A lifecycle step (01–15). Run with <code>sdlc run</code> and a stage id, or a <code>/project:…</code> slash command.</td></tr><tr><td><strong>Role</strong></td><td>Persona for the AI (<code>sdlc use</code>). Changes which rules and playbooks apply.</td></tr><tr><td><strong>Stack</strong></td><td>Tech lane (e.g. java). Refines implementation guidance.</td></tr><tr><td><strong>Workflow / flow</strong></td><td>Named bundle of stages (<code>sdlc flow list</code>).</td></tr><tr><td><strong>Module / KB</strong></td><td>Code-derived facts under <code>.sdlc/module/</code> (<code>sdlc module init</code>).</td></tr><tr><td><strong>Semantic memory</strong></td><td>Decision-derived facts; SQLite locally; team JSONL in git.</td></tr><tr><td><strong>MCP</strong></td><td>IDE tools exposed to the model (ADO, wiki, …).</td></tr><tr><td><strong>ASK</strong></td><td>CLI cannot prompt → confirm next step in chat with your assistant.</td></tr></table>
 
 <hr>
 
@@ -631,7 +631,7 @@ sdlc doctor --verbose    # show validator script output</code></pre>
 
 <h2>First Run</h2>
 
-<pre><code class="language-bash">sdlc use backend --stack=java-tej   # Select role + stack
+<pre><code class="language-bash">sdlc use backend --stack=java   # Select role + stack
 sdlc context                         # Verify setup
 sdlc run 08-implementation           # Run a stage</code></pre>
 
@@ -1131,7 +1131,7 @@ git pull  # All repos immediately get new rules/skills</code></pre>
 
 <h2>One-time: before you start</h2>
 
-<table><tr><th>Step</th><th>Plain English</th><th>CLI (terminal)</th><th>IDE chat (Cursor / Claude Code)</th><th>Natural language (NL) examples</th></tr><tr><td>Get the platform</td><td>Clone <strong><code>ai-sdlc-platform</code></strong> from Azure DevOps (<a href="https://github.com/YOUR_GITHUB_USER/ai_sdlc_platform.git" target="_blank">URL</a>); clone your <strong>app repo</strong> too if separate.</td><td><code>git clone https://github.com/YOUR_GITHUB_USER/ai_sdlc_platform.git</code> → <code>cd AI-sdlc-platform</code> → <code>./setup.sh</code> or <code>./setup.sh /path/to/app</code></td><td>Open repo in IDE → ask to <strong>run setup</strong></td><td>“Install SDLC” / “Run <code>./setup.sh</code> for this project”</td></tr><tr><td>Check health</td><td>Confirms tools, hooks, docs, ADO env (if set).</td><td><code>sdlc doctor</code></td><td>Ask: <strong>“Run sdlc doctor”</strong></td><td>“Diagnose SDLC setup”</td></tr><tr><td>Pick who you are</td><td>Role drives rules and suggestions (e.g. backend vs QA).</td><td><code>sdlc use backend --stack=java-tej</code> (example)</td><td>—</td><td>“Set my role to backend, stack java-tej”</td></tr><tr><td>Azure DevOps (optional)</td><td>Needed to push stories / sync work items.</td><td>Edit <code>env/.env</code>: <code>ADO_PAT</code>, <code>ADO_ORG</code>, <code>ADO_PROJECT</code></td><td>Paste PAT only in secure chat if your policy allows</td><td>“Help me configure ADO in env/.env”</td></tr></table>
+<table><tr><th>Step</th><th>Plain English</th><th>CLI (terminal)</th><th>IDE chat (Cursor / Claude Code)</th><th>Natural language (NL) examples</th></tr><tr><td>Get the platform</td><td>Clone <strong><code>ai-sdlc-platform</code></strong> from Azure DevOps (<a href="https://github.com/YOUR_GITHUB_USER/ai_sdlc_platform.git" target="_blank">URL</a>); clone your <strong>app repo</strong> too if separate.</td><td><code>git clone https://github.com/YOUR_GITHUB_USER/ai_sdlc_platform.git</code> → <code>cd AI-sdlc-platform</code> → <code>./setup.sh</code> or <code>./setup.sh /path/to/app</code></td><td>Open repo in IDE → ask to <strong>run setup</strong></td><td>“Install SDLC” / “Run <code>./setup.sh</code> for this project”</td></tr><tr><td>Check health</td><td>Confirms tools, hooks, docs, ADO env (if set).</td><td><code>sdlc doctor</code></td><td>Ask: <strong>“Run sdlc doctor”</strong></td><td>“Diagnose SDLC setup”</td></tr><tr><td>Pick who you are</td><td>Role drives rules and suggestions (e.g. backend vs QA).</td><td><code>sdlc use backend --stack=java</code> (example)</td><td>—</td><td>“Set my role to backend, stack java”</td></tr><tr><td>Azure DevOps (optional)</td><td>Needed to push stories / sync work items.</td><td>Edit <code>env/.env</code>: <code>ADO_PAT</code>, <code>ADO_ORG</code>, <code>ADO_PROJECT</code></td><td>Paste PAT only in secure chat if your policy allows</td><td>“Help me configure ADO in env/.env”</td></tr></table>
 
 <p><strong>Cursor / agent setup (no keyboard on the script):</strong> If the assistant runs <code>./setup.sh</code> or <code>sdlc-setup.sh</code> for you, the shell often has <strong>no TTY</strong>. Use <strong>AskQuestion</strong> in chat for role, stack, and ADO, then re-run with <strong><code>SDL_SETUP_<em></code></strong> and <strong><code>ADO_</em></code></strong> exports (see <strong><code>cli/sdlc-setup.sh --help</code></strong> and <a href="#index">INDEX</a>).</p>
 
@@ -1221,7 +1221,7 @@ git pull  # All repos immediately get new rules/skills</code></pre>
 
 <pre><code class="language-bash"># From app repo root, with sdlc on PATH
 sdlc doctor
-sdlc use backend --stack=java-tej   # example
+sdlc use backend --stack=java   # example
 sdlc doc convert ./path/to/PRD.docx
 sdlc module init .
 sdlc module load api
@@ -1396,7 +1396,7 @@ sdlc context                        # Show current role / stack / stage</code></
 
 <table><tr><th><strong>Primary stages</strong></th><th><code>03-pre-grooming</code>, <code>04-grooming</code>, <code>04</code> (facilitation), <code>14-release-signoff</code> (cross-pod coordination).</th></tr><tr><td><strong>Typical chain</strong></td><td>Validate blockers / dependencies → facilitate estimation → align ADO links → escalate integration risks → <strong>sign-off</strong> with PM/QA on release readiness.</td></tr><tr><td><strong>Approves</strong></td><td>Dependency resolution, release sequencing (with PM/Boss).</td></tr></table>
 
-<h3>3.3 Backend (`sdlc use backend --stack=java-tej` or your stack)</h3>
+<h3>3.3 Backend (`sdlc use backend --stack=java` or your stack)</h3>
 
 <table><tr><th><strong>Primary stages</strong></th><th><code>05-system-design</code> → <code>08-implementation</code> → <code>09-code-review</code> → <code>12-commit-push</code> → <code>13-documentation</code>.</th></tr><tr><td><strong>Typical chain</strong></td><td>Design APIs/contracts → implement → review → commit → ADR/ops docs; <strong>pair with</strong> <code>10</code>/<code>11</code> when QA tests.</td></tr><tr><td><strong>Approves</strong></td><td>Tech design (with peers), merge after review.</td></tr></table>
 
@@ -1575,7 +1575,7 @@ sdlc context                        # Show current role / stack / stage</code></
 
 <h3>What it is</h3>
 
-<p><strong>Role</strong> answers: “Who am I <em>for the AI</em>?” (product, backend, qa, tpm, …). <strong>Stack</strong> answers: “Which technology lane?” (java-tej, kotlin-android, …). Together they <strong>select</strong> which rules, stage variants, and playbook text apply — they do not change your HR job title.</p>
+<p><strong>Role</strong> answers: “Who am I <em>for the AI</em>?” (product, backend, qa, tpm, …). <strong>Stack</strong> answers: “Which technology lane?” (java, kotlin-android, …). Together they <strong>select</strong> which rules, stage variants, and playbook text apply — they do not change your HR job title.</p>
 
 <h3>How it works</h3>
 
@@ -1755,7 +1755,7 @@ sdlc context                        # Show current role / stack / stage</code></
 <h3>Context Management</h3>
 
 <pre><code class="language-bash">sdlc use &lt;role&gt;                    # Switch role
-sdlc use backend --stack=java-tej  # Role + stack
+sdlc use backend --stack=java  # Role + stack
 sdlc context                       # Show current role/stack/stage
 sdlc init                          # Initialize context</code></pre>
 
@@ -3491,7 +3491,7 @@ cd ai-sdlc-platform
 
 <pre><code class="language-bash">cd your-project
 sdlc doctor              # Verify setup
-sdlc use backend --stack=java-tej  # Set your role</code></pre>
+sdlc use backend --stack=java  # Set your role</code></pre>
 
 <hr>
 
@@ -3527,7 +3527,7 @@ sdlc story push stories/MS-Test.md</code></pre>
 
 <h2>🎭 Role Quick Start</h2>
 
-<table><tr><th>Role</th><th>First Command</th></tr><tr><td><strong>Backend</strong></td><td><code>sdlc use backend --stack=java-tej</code></td></tr><tr><td><strong>Frontend</strong></td><td><code>sdlc use frontend --stack=react-native</code></td></tr><tr><td><strong>QA</strong></td><td><code>sdlc use qa</code></td></tr><tr><td><strong>Product</strong></td><td><code>sdlc use product</code></td></tr><tr><td><strong>UI</strong></td><td><code>sdlc use ui --stack=figma-design</code></td></tr></table>
+<table><tr><th>Role</th><th>First Command</th></tr><tr><td><strong>Backend</strong></td><td><code>sdlc use backend --stack=java</code></td></tr><tr><td><strong>Frontend</strong></td><td><code>sdlc use frontend --stack=react-native</code></td></tr><tr><td><strong>QA</strong></td><td><code>sdlc use qa</code></td></tr><tr><td><strong>Product</strong></td><td><code>sdlc use product</code></td></tr><tr><td><strong>UI</strong></td><td><code>sdlc use ui --stack=figma-design</code></td></tr></table>
 
 <hr>
 
@@ -3698,7 +3698,7 @@ sdlc module update              # Update code KB</code></pre>
 
 <pre><code>Morning:
 1. Open your feature branch
-2. Run: sdlc use backend --stack=java-tej
+2. Run: sdlc use backend --stack=java
 3. Work on your story (AB#12345)
 
 During development:
@@ -3863,7 +3863,7 @@ sdlc ado list --sprint=45    # What's in flight</code></pre>
 
 <h2>Stage Execution</h2>
 
-<p><strong>Q: Stage fails with "context missing"</strong> Set role first: <code>sdlc use backend --stack=java-tej</code></p>
+<p><strong>Q: Stage fails with "context missing"</strong> Set role first: <code>sdlc use backend --stack=java</code></p>
 
 <p><strong>Q: Command failed with "ASK in chat" or I don't know what to run next</strong> See <strong><a href="#guided-execution-and-recovery">Guided_Execution_and_Recovery</a></strong> — use the printed <code>sdlc</code> lines, run <code>sdlc context</code>, then <code>sdlc doctor</code>. In IDE chat, ask the assistant to read the error and give the <strong>exact</strong> next commands (non-interactive terminals cannot prompt).</p>
 

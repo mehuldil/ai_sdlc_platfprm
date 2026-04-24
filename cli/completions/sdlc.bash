@@ -21,7 +21,7 @@ _sdlc_completions() {
   local stages="01-requirement-intake 02-prd-review 03-pre-grooming 04-grooming 05-system-design 06-design-review 07-task-breakdown 08-implementation 09-code-review 10-test-design 11-test-execution 12-commit-push 13-documentation 14-release-signoff 15-summary-close"
 
   # Available stacks
-  local stacks="java-tej kotlin-android swift-ios react-native jmeter figma-design"
+  local stacks="java kotlin-android swift-ios react-native jmeter figma-design"
 
   # Available workflows
   local workflows="dev-cycle full-sdlc test-cycle prd-to-stories perf-cycle design-cycle boss-report"

@@ -8,7 +8,7 @@ Works in: Cursor IDE chat + Claude Code + CLI
 
 ```
 /project:architecture-review AB#123
-/project:architecture-review AB#123 --role=backend --stack=java-tej
+/project:architecture-review AB#123 --role=backend --stack=java
 /project:architecture-review AB#123 --create-adr
 ```
 
