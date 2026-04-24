@@ -1,7 +1,7 @@
 # Skills Registry
 
-**Last Generated**: 2026-04-21T07:39:36Z
-**Total Skills**: 36
+**Last Generated**: 2026-04-24T11:13:08Z
+**Total Skills**: 39
 
 ## Skill Categories
 
@@ -25,7 +25,7 @@
 - contract-generator.md - API contract generation
 - story-generator.md - User story generation
 
-**Total Skills**: 36
+**Total Skills**: 39
 
 ---
 
@@ -42,5 +42,5 @@ grep -r "skill_name" skills/ --include="*.md"
 
 ---
 
-**Generated**: 2026-04-21T07:39:36Z
+**Generated**: 2026-04-24T11:13:08Z
 **Command**: regenerate-registries.sh --update

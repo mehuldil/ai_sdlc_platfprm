@@ -1,7 +1,7 @@
 # Agent Capability Matrix
 
-**Last Generated**: 2026-04-21T07:39:36Z
-**Total Agents**: 52
+**Last Generated**: 2026-04-24T11:13:08Z
+**Total Agents**: 55
 
 **Authoritative manifest:** [agent-registry.json](agent-registry.json) — tiers, tags, token budgets, and tool wiring.
 
@@ -15,7 +15,7 @@ Individual agent files include a short **SDLC authoring** line pointing to this 
 
 | Tier | Domain | Count | Purpose |
 |------|--------|-------|---------|
-| **Tier 1** | Shared (Universal) | 16 | Core system agents used by all roles |
+| **Tier 1** | Shared (Universal) | 19 | Core system agents used by all roles |
 | **Tier 2** | Backend | 4 | Backend-specific agents |
 | **Tier 2** | Frontend | 16 | Mobile/web/design/dev agents |
 | **Tier 2** | QA | 10 | Requirements through test execution |
@@ -23,7 +23,7 @@ Individual agent files include a short **SDLC authoring** line pointing to this 
 | **Tier 2** | Product | 1 | Product management |
 | **Tier 3** | Reports / Executive | 1 | Cross-cutting reports and release |
 
-**Total Agents**: 52
+**Total Agents**: 55
 
 ---
 
@@ -33,6 +33,7 @@ Individual agent files include a short **SDLC authoring** line pointing to this 
 
 - `ado-integration`
 - `architect-agent`
+- `auto-documentation-guardian`
 - `compliance-auditor`
 - `context-guard`
 - `em-agent`
@@ -41,6 +42,8 @@ Individual agent files include a short **SDLC authoring** line pointing to this 
 - `master-code-reviewer`
 - `pipeline-coordinator-agent`
 - `pipeline-flow`
+- `pm-agent`
+- `qa-agent`
 - `release-manager-agent`
 - `rpi-coordinator`
 - `smart-routing`
@@ -114,5 +117,5 @@ grep -r "description" agents/ --include="*.md"
 
 ---
 
-**Generated**: 2026-04-21T07:39:36Z
+**Generated**: 2026-04-24T11:13:08Z
 **Command**: regenerate-registries.sh --update
