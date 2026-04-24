@@ -68,7 +68,7 @@ cd ai_sdlc_platform
 ./setup.sh /path/to/your/project   # or just ./setup.sh for in-repo use
 sdlc doctor                        # verify hooks and health
 
-sdlc use backend --stack=java-tej  # pick your role and stack
+sdlc use backend --stack=java  # pick your role and stack
 sdlc context                       # confirm current state
 sdlc run 05-system-design          # jump into any stage
 ```
