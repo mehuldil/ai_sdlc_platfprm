@@ -143,7 +143,11 @@ cmd_run() {
 
   if [[ -z "$SDLC_ROLE" ]]; then
     log_error_recovery "No role set. Run 'sdlc use <role>' first (or ASK in chat, then run that command)" \
+<<<<<<< HEAD
       "Example: sdlc use product   or   sdlc use backend --stack=java-tej"
+=======
+      "Example: sdlc use product   or   sdlc use backend --stack=java"
+>>>>>>> 5a6d807 (Final commit of AI-SDLC Platform)
     return 1
   fi
 

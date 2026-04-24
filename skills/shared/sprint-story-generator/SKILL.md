@@ -75,3 +75,39 @@ INCLUDE_ACS: AC-01, AC-02, AC-03
 - **Master story:** `skills/shared/story-generator/`
 - **Tasks:** `skills/shared/tech-task-generator/`
 - **Validate:** `skills/shared/story-validator/`
+<<<<<<< HEAD
+=======
+
+---
+
+## MANDATORY: PRD Coverage Validation for Sprint Stories
+
+**REQUIRED BEFORE PUSH TO ADO**
+
+Sprint Stories inherit PRD coverage from Master Stories. Before pushing:
+
+### Validation Checklist
+
+| Check | Validation | Status |
+|-------|------------|--------|
+| **Parent Coverage** | Master Story has valid PRD Coverage Matrix | ⬜ |
+| **N# Inherited** | All notifications in Sprint scope covered | ⬜ |
+| **R# Inherited** | All rules in Sprint scope enforced | ⬜ |
+| **No New Artifacts** | Sprint does NOT introduce new N/R/S/D/E | ⬜ |
+| **Traceability** | Each AC references Master Story AC # | ⬜ |
+
+### Validation Command (MANDATORY)
+
+```bash
+# Validate Sprint Story inherits PRD coverage correctly
+python AI_SDLC_Platform/scripts/validate-before-create.py \
+  stories/FH-001-S01-sprint.md \
+  Sprint
+
+# Only proceed if validation passes
+# Then push with parent reference
+sdlc story push stories/FH-001-S01-sprint.md --parent=<Feature-ID>
+```
+
+**FAILURE TO VALIDATE → ADO-865620-TYPE GAPS → REWORK REQUIRED**
+>>>>>>> 5a6d807 (Final commit of AI-SDLC Platform)

@@ -177,6 +177,7 @@ Ask the PM:
 5. **Contradiction Check:** Review the 5 common patterns - any AC contradicting PRD?
 6. **Entry Points:** Are all user entry paths documented (+, See All, deep links)?
 
+<<<<<<< HEAD
 ### Validation Steps Before ADO Push
 ```bash
 # 1. Validate story structure
@@ -192,6 +193,66 @@ sdlc story validate stories/MS-xxx.md
 sdlc story push stories/MS-xxx.md --type=feature
 ```
 
+=======
+### MANDATORY: Validation Before Any Creation or Push
+
+**THIS IS REQUIRED - NO EXCEPTIONS**
+
+Every Master Story MUST pass PRD coverage validation before:
+- ✗ Creating the story file (before you even save it)
+- ✗ Pushing to Azure DevOps
+- ✗ Marking as "ready for grooming"
+- ✗ Handoff to engineering
+
+#### Validation Steps (MANDATORY)
+
+```bash
+# STEP 1: Run PRD Coverage Validation (MANDATORY)
+python AI_SDLC_Platform/scripts/validate-before-create.py \
+  stories/FH-001-master.md \
+  Master
+
+# STEP 2: If validation passes, proceed. If it fails:
+#   - Fix all CRITICAL errors
+#   - Re-run validation
+#   - Only proceed after "VALIDATION PASSED"
+
+# STEP 3: Validate structure
+sdlc story validate stories/FH-001-master.md
+
+# STEP 4: Push to ADO (only after all validations pass)
+sdlc story push stories/FH-001-master.md --type=feature
+```
+
+#### Validation Checklist (MUST PASS)
+
+| Check | What It Validates | Status |
+|-------|-------------------|--------|
+| **PRD Coverage Matrix** | Section exists with N/R/S/D/E tables | ⬜ |
+| **N4/N5** | Decline/Expiry with NO push behavior | ⬜ |
+| **N7/N8 Timing** | "within 60 seconds" explicitly stated | ⬜ |
+| **R3** | "X out of 5" member count display | ⬜ |
+| **R5** | Declined invites NOT shown | ⬜ |
+| **R6** | Resend behavior (new code, invalidates old) | ⬜ |
+| **R15** | Owner sees individual member storage | ⬜ |
+| **S7** | Over-quota leave scenario | ⬜ |
+| **S8** | Storage consumption order | ⬜ |
+| **Flow** | Auto-creation (no separate Create step) | ⬜ |
+| **Count** | "excluding owner" not "including owner" | ⬜ |
+| **Copy** | Leave dialog matches PRD exactly | ⬜ |
+| **Timing** | All SLA requirements captured | ⬜ |
+
+**If any check fails → STOP → Fix → Re-validate → Only then proceed**
+
+### For Sprint Stories
+Ask the team:
+1. Can we commit to these 7 ACs in this sprint, given our capacity?
+2. Are the task estimates realistic, or should we reduce scope?
+3. Are there any hidden dependencies we haven't captured?
+
+Do not proceed to implementation suggestions. Your job ends at a handoff-ready story.
+
+>>>>>>> 5a6d807 (Final commit of AI-SDLC Platform)
 ### For Sprint Stories
 Ask the team:
 1. Can we commit to these 7 ACs in this sprint, given our capacity?
