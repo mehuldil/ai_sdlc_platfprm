@@ -1,6 +1,6 @@
 # Skills Registry
 
-**Last Generated**: 2026-04-24T11:22:17Z
+**Last Generated**: 2026-04-24T11:22:48Z
 **Total Skills**: 39
 
 ## Skill Categories
@@ -42,5 +42,5 @@ grep -r "skill_name" skills/ --include="*.md"
 
 ---
 
-**Generated**: 2026-04-24T11:22:17Z
+**Generated**: 2026-04-24T11:22:48Z
 **Command**: regenerate-registries.sh --update
