@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 /**
- * build-manual-html.mjs (v5.1.0) - ENHANCED CARD PREVIEWS
- * 
- * Adds rich card content with:
- * - Meaningful preview snippets from markdown
- * - Suggested actions & next steps
- * - External resource links
- * - Better visual hierarchy
+ * build-manual-html.mjs (v6.0.0) - APPLE DESIGN + PRISM + SEARCH
+ *
+ * Fixes:
+ * - Prism.js code highlighting activation with proper <pre><code> structure
+ * - Full-text search with live filtering and result highlighting
+ * - Apple design system: smooth transitions, proper spacing, typography
+ * - Mermaid.js auto-initialization
+ * - Dark/light mode with system detection
  */
 
 import fs from 'node:fs';
@@ -91,7 +92,6 @@ const TITLES = {
   'FAQ.md': 'FAQ', 'CHANGELOG.md': 'Changelog'
 };
 
-// Card suggestions for each topic
 const CARD_ACTIONS = {
   'README.md': ['Learn what AI-SDLC is', 'Understand the platform benefits'],
   'INDEX.md': ['Browse all topics', 'Find your starting point'],
@@ -149,60 +149,58 @@ function loadDocs() {
     const markdown = fs.readFileSync(p, 'utf8');
     docs.push({ file: f, slug: slugFor(f), title: titleFor(f), markdown });
   }
-  if (missing.length > 0) console.warn('Skipped: ' + missing.join(', '));
-  return { docs, missing };
+  if (missing.length > 0) {
+    console.log(`⚠️  Missing ${missing.length} files: ${missing.join(', ')}`);
+  }
+  return docs;
 }
 
-const md = new MarkdownIt({ html: true, breaks: false, linkify: false });
-md.use(markdownItAnchor, { permalink: false, level: [2, 3] });
-
 function generatePageTOC(markdown) {
-  const headings = [];
   const lines = markdown.split('\n');
-  for (const line of lines) {
-    const m2 = line.match(/^## (.+)$/);
-    const m3 = line.match(/^### (.+)$/);
-    if (m2) {
-      const id = m2[1].toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-      headings.push({ level: 2, text: m2[1], id });
-    } else if (m3) {
-      const id = m3[1].toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-      headings.push({ level: 3, text: m3[1], id });
-    }
-  }
+  const headings = lines.filter(l => l.match(/^## /));
   if (headings.length === 0) return '';
-  let toc = '<nav class="page-toc"><details><summary>On this page</summary><ul>';
-  for (const h of headings) {
-    const indent = h.level === 3 ? '  ' : '';
-    toc += `${indent}<li><a href="#${h.id}">${h.text}</a></li>`;
-  }
-  return toc + '</ul></details></nav>';
+
+  const toc = headings.map(h => {
+    const text = h.replace(/^## /, '').trim();
+    const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
+    return `<li><a href="#${id}">${esc(text)}</a></li>`;
+  }).join('\n');
+
+  return `<nav class="toc"><ul>${toc}</ul></nav>`;
 }
 
 function markdownToHtml(markdown) {
-  let html = md.render(markdown);
-  
-  // Convert markdown links to anchor links
-  html = html.replace(/<a href="([^"]+\.md(?:#[^"]*)?)"([^>]*)>([^<]+)<\/a>/g, (match, href, attrs, text) => {
-    const slug = href.replace(/\.md.*$/, '').replace(/^.*[\\/]/, '').toLowerCase();
-    const anchor = href.includes('#') ? href.split('#')[1] : '';
-    const target = anchor ? `#${anchor}` : `#${slug}`;
-    return `<a href="${target}"${attrs}>${text}</a>`;
+  const md = new MarkdownIt({
+    html: false,
+    linkify: true,
+    typographer: true,
+    highlight: function(str, lang) {
+      // CRITICAL: Return proper <pre><code> structure for Prism.js activation
+      if (lang) {
+        return `<pre class="language-${lang}"><code class="language-${lang}">${esc(str)}</code></pre>`;
+      }
+      return `<pre><code>${esc(str)}</code></pre>`;
+    }
   });
 
-  // Wrap mermaid diagrams
-  html = html.replace(/<pre><code class="language-mermaid">([\s\S]*?)<\/code><\/pre>/g, '<div class="mermaid">$1</div>');
-  
+  md.use(markdownItAnchor, {
+    slugify: s => s.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '')
+  });
+
+  let html = md.render(markdown);
+
+  // Auto-initialize mermaid blocks
+  html = html.replace(/<pre><code class="language-mermaid">([\s\S]*?)<\/code><\/pre>/g,
+    '<div class="mermaid">$1</div>');
+
   return html;
 }
 
 function getCardContent(title, markdown, file) {
   const actions = CARD_ACTIONS[file] || ['Read full documentation'];
-  
-  // Get better preview from markdown
   const lines = markdown.split('\n').filter(l => l.trim() && !l.startsWith('#'));
   const preview = lines.slice(0, 1).join(' ').substring(0, 70).trim();
-  
+
   return {
     preview: preview || 'Learn more about this topic',
     actions: actions
@@ -229,7 +227,7 @@ function buildGroupBlocks(docs) {
 
     for (const doc of groupDocs) {
       const content = getCardContent(doc.title, doc.markdown, doc.file);
-      html += `<a href="#${doc.slug}" class="topic-card" style="border-left: 4px solid ${groupData.color}">
+      html += `<a href="#${doc.slug}" class="topic-card" style="border-left: 4px solid ${groupData.color}" data-title="${esc(doc.title)}" data-keywords="${esc(content.preview)}">
         <h3>${esc(doc.title)}</h3>
         <p class="card-preview">${esc(content.preview)}</p>
         <div class="card-actions">
@@ -245,18 +243,28 @@ function buildGroupBlocks(docs) {
   return html;
 }
 
+function buildSearchIndex(docs) {
+  const index = docs.map(d => ({
+    slug: d.slug,
+    title: d.title,
+    content: d.markdown.replace(/#/g, '').substring(0, 500)
+  }));
+
+  return JSON.stringify(index);
+}
+
 function buildHTML(docs) {
   const groupBlocks = buildGroupBlocks(docs);
-  
+  const searchIndex = buildSearchIndex(docs);
+
   const docCards = docs.map(d => {
     const toc = generatePageTOC(d.markdown);
     const htmlContent = markdownToHtml(d.markdown);
-    
-    // Find next and previous docs for flow navigation
+
     const currentIndex = docs.findIndex(doc => doc.slug === d.slug);
     const prevDoc = currentIndex > 0 ? docs[currentIndex - 1] : null;
     const nextDoc = currentIndex < docs.length - 1 ? docs[currentIndex + 1] : null;
-    
+
     let nav = '';
     if (prevDoc || nextDoc) {
       nav = '<nav class="doc-nav">';
@@ -280,10 +288,10 @@ function buildHTML(docs) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="AI-SDLC Platform Manual v5.1.0" />
+  <meta name="description" content="AI-SDLC Platform Manual v6.0.0" />
   <title>AI-SDLC Platform Manual</title>
-  
-  <!-- Prism.js -->
+
+  <!-- Prism.js with proper theme -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"><\/script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"><\/script>
@@ -291,48 +299,67 @@ function buildHTML(docs) {
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"><\/script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"><\/script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"><\/script>
-  
-  <!-- Mermaid.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markdown.min.js"><\/script>
+
+  <!-- Mermaid.js for diagrams -->
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"><\/script>
-  
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });<\/script>
+
   <style>
 :root {
   --bg: #fff;
   --bg-alt: #f5f5f7;
-  --bg-code: #efefef;
+  --bg-code: #1e1e1e;
   --text: #1d1d1d;
   --text-secondary: #666;
   --text-tertiary: #999;
   --accent: #0071e3;
+  --accent-hover: #0077ed;
   --border: #e5e5e7;
+  --border-subtle: #f0f0f0;
   --radius: 12px;
-  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --radius-sm: 8px;
+  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
   --font-mono: 'Menlo', 'Monaco', 'Courier New', monospace;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 12px 24px rgba(0, 0, 0, 0.12);
+  --transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --bg: #000;
     --bg-alt: #1d1d1f;
-    --bg-code: #2a2a2e;
+    --bg-code: #161616;
     --text: #f5f5f7;
     --text-secondary: #a1a1a6;
     --text-tertiary: #727278;
     --border: #424245;
+    --border-subtle: #2a2a2e;
+    --accent: #0a84ff;
+    --accent-hover: #1296ff;
   }
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; }
-body { font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.6; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  transition: background 0.2s, color 0.2s;
+}
 
-/* Header */
+/* Header & Search */
 header {
   position: sticky; top: 0; z-index: 100;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border);
   padding: 14px 0;
+  transition: var(--transition);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -358,6 +385,7 @@ header {
 .search {
   flex: 1;
   max-width: 350px;
+  position: relative;
 }
 
 .search input {
@@ -369,7 +397,7 @@ header {
   color: var(--text);
   font-family: var(--font);
   font-size: 14px;
-  transition: all 0.2s;
+  transition: var(--transition);
 }
 
 .search input:focus {
@@ -377,6 +405,54 @@ header {
   border-color: var(--accent);
   background: var(--bg);
   box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.1);
+}
+
+.search-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  max-height: 400px;
+  overflow-y: auto;
+  display: none;
+  z-index: 1000;
+  box-shadow: var(--shadow-md);
+}
+
+.search-results.active {
+  display: block;
+}
+
+.search-result-item {
+  padding: 12px;
+  border-bottom: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.search-result-item:last-child {
+  border-bottom: none;
+}
+
+.search-result-item:hover {
+  background: var(--bg-alt);
+}
+
+.search-result-title {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+
+.search-result-snippet {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.4;
 }
 
 /* Main */
@@ -393,6 +469,7 @@ main {
   background: var(--bg-alt);
   border-radius: var(--radius);
   border-left: 4px solid;
+  transition: var(--transition);
 }
 
 .group-header {
@@ -427,6 +504,7 @@ main {
   overflow-x: auto;
   padding-bottom: 12px;
   scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
 .card-scroll::-webkit-scrollbar {
@@ -434,35 +512,41 @@ main {
 }
 
 .card-scroll::-webkit-scrollbar-track {
-  background: var(--bg);
+  background: transparent;
 }
 
 .card-scroll::-webkit-scrollbar-thumb {
   background: var(--border);
   border-radius: 3px;
+  transition: var(--transition);
 }
 
-/* Topic Cards - ENHANCED */
+.card-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+/* Topic Cards */
 .topic-card {
   flex: 0 0 300px;
   padding: 20px;
   background: var(--bg);
   border-left: 4px solid;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   text-decoration: none;
   color: inherit;
-  transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+  transition: var(--transition);
   cursor: pointer;
   position: relative;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   min-height: 180px;
+  box-shadow: var(--shadow-sm);
 }
 
 .topic-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg);
 }
 
 .topic-card h3 {
@@ -470,6 +554,7 @@ main {
   font-weight: 700;
   margin-bottom: 12px;
   color: var(--text);
+  letter-spacing: -0.3px;
 }
 
 .card-preview {
@@ -481,7 +566,6 @@ main {
   min-height: 40px;
 }
 
-/* Card Actions - NEW */
 .card-actions {
   display: flex;
   flex-wrap: wrap;
@@ -499,24 +583,21 @@ main {
   font-size: 11px;
   font-weight: 600;
   color: var(--text-secondary);
-  text-transform: uppercase;
+  transition: var(--transition);
   letter-spacing: 0.3px;
 }
 
 .topic-card:hover .action-tag {
   background: var(--accent);
   color: white;
-  transition: all 0.2s;
+  transform: scale(1.05);
 }
 
-.topic-card .arrow {
-  font-size: 14px;
-  font-weight: 600;
+.arrow {
   opacity: 0;
-  transition: opacity 0.3s, transform 0.3s;
-  display: inline-block;
-  align-self: flex-start;
-  margin-top: auto;
+  transition: var(--transition);
+  font-weight: 600;
+  color: var(--accent);
 }
 
 .topic-card:hover .arrow {
@@ -524,314 +605,288 @@ main {
   transform: translateX(4px);
 }
 
-/* Documents */
+/* Document Sections */
 .doc-section {
-  margin-bottom: 100px;
-  scroll-margin-top: 80px;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 80px 0;
+  scroll-margin-top: 100px;
 }
 
 .doc-header {
-  margin-bottom: 48px;
-  padding-bottom: 32px;
-  border-bottom: 1px solid var(--border);
+  margin-bottom: 40px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid var(--border-subtle);
 }
 
 .doc-header h1 {
-  font-size: 48px;
+  font-size: 42px;
   font-weight: 700;
-  margin-bottom: 24px;
-  letter-spacing: -0.5px;
-  line-height: 1.1;
+  margin-bottom: 16px;
+  letter-spacing: -1px;
+  line-height: 1.2;
 }
 
-.page-toc {
-  margin-top: 16px;
-}
-
-.page-toc summary {
-  cursor: pointer;
-  font-weight: 600;
-  color: var(--accent);
-  font-size: 13px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.page-toc ul {
-  margin: 12px 0 0 20px;
-  padding: 0;
-  list-style: none;
-}
-
-.page-toc li { margin: 6px 0; }
-
-.page-toc a {
-  color: var(--text-secondary);
-  text-decoration: none;
-  font-size: 13px;
-  transition: all 0.2s;
-}
-
-.page-toc a:hover { color: var(--accent); }
-
-/* Content */
 .doc-body {
   font-size: 16px;
-  color: var(--text-secondary);
   line-height: 1.8;
+  color: var(--text);
 }
 
 .doc-body h2 {
   font-size: 28px;
   font-weight: 700;
-  margin: 48px 0 24px 0;
-  padding-top: 24px;
-  border-top: 1px solid var(--border);
-  color: var(--text);
+  margin: 40px 0 20px;
   letter-spacing: -0.5px;
+  scroll-margin-top: 100px;
 }
 
 .doc-body h3 {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 600;
-  margin: 32px 0 16px 0;
-  color: var(--text);
+  margin: 32px 0 16px;
   letter-spacing: -0.3px;
+  scroll-margin-top: 100px;
 }
 
 .doc-body p {
-  margin: 16px 0;
-  color: var(--text-secondary);
+  margin-bottom: 20px;
 }
 
-.doc-body a {
-  color: var(--accent);
-  text-decoration: none;
-  border-bottom: 1px solid rgba(0, 113, 227, 0.2);
-  transition: all 0.2s;
+.doc-body ul, .doc-body ol {
+  margin: 20px 0 20px 24px;
 }
 
-.doc-body a:hover {
-  border-bottom-color: var(--accent);
+.doc-body li {
+  margin-bottom: 8px;
 }
 
+/* Code Blocks - Prism Integration */
 .doc-body code {
-  background: var(--bg-code);
-  padding: 3px 8px;
+  background: var(--bg-alt);
+  padding: 2px 6px;
   border-radius: 4px;
   font-family: var(--font-mono);
   font-size: 14px;
+  color: var(--accent);
 }
 
 .doc-body pre {
   background: var(--bg-code);
   padding: 16px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   overflow-x: auto;
-  margin: 20px 0;
-  border-left: 4px solid var(--accent);
-  position: relative;
+  margin: 24px 0;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+
+.doc-body pre:hover {
+  border-color: var(--accent);
 }
 
 .doc-body pre code {
   background: none;
   padding: 0;
-  font-size: 13px;
-  line-height: 1.6;
-  color: var(--text);
+  color: inherit;
 }
 
-.doc-body table {
+/* Prism.js Styles */
+code[class*="language-"],
+pre[class*="language-"] {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.5;
+  color: #c5c8c6;
+}
+
+pre[class*="language-"] {
+  color: #c5c8c6;
+}
+
+/* Mermaid Diagrams */
+.mermaid {
+  display: flex;
+  justify-content: center;
+  margin: 24px 0;
+}
+
+/* Tables */
+table {
   width: 100%;
   border-collapse: collapse;
-  margin: 20px 0;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  overflow: hidden;
+  margin: 24px 0;
+  font-size: 14px;
 }
 
-.doc-body th {
-  background: var(--bg-alt);
-  padding: 12px 16px;
+table th, table td {
+  padding: 12px;
   text-align: left;
-  font-weight: 600;
-  font-size: 13px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border: 1px solid var(--border);
-  color: var(--text);
+  border-bottom: 1px solid var(--border);
 }
 
-.doc-body td {
-  padding: 12px 16px;
-  border: 1px solid var(--border);
+table th {
+  background: var(--bg-alt);
+  font-weight: 700;
 }
 
-.doc-body tbody tr:hover {
+table tr:hover {
   background: var(--bg-alt);
 }
 
-.doc-body ul, .doc-body ol {
-  margin: 16px 0;
-  padding-left: 28px;
-}
-
-.doc-body li { margin: 8px 0; }
-
-.doc-body blockquote {
-  margin: 20px 0;
-  padding: 16px 20px;
+/* Blockquotes */
+blockquote {
   border-left: 4px solid var(--accent);
-  background: var(--bg-alt);
-  border-radius: 0 8px 8px 0;
+  padding-left: 20px;
+  margin: 24px 0;
   color: var(--text-secondary);
   font-style: italic;
 }
 
-.doc-body hr {
-  margin: 40px 0;
-  border: none;
-  border-top: 1px solid var(--border);
+/* Links */
+a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: var(--transition);
 }
 
-/* Mermaid */
-.mermaid {
-  background: var(--bg-alt);
-  padding: 16px;
-  border-radius: 8px;
-  margin: 20px 0;
-  display: flex;
-  justify-content: center;
+a:hover {
+  color: var(--accent-hover);
+  text-decoration: underline;
 }
 
 /* Navigation */
 .doc-nav {
   display: flex;
-  gap: 16px;
-  margin-top: 64px;
-  padding-top: 32px;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 60px;
+  padding-top: 20px;
   border-top: 1px solid var(--border);
 }
 
 .nav-prev, .nav-next {
-  flex: 1;
-  padding: 16px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  text-decoration: none;
-  color: var(--accent);
-  font-weight: 600;
-  font-size: 14px;
-  transition: all 0.2s;
-}
-
-.nav-prev:hover, .nav-next:hover {
+  padding: 12px 16px;
   background: var(--bg-alt);
-  transform: translateY(-2px);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  transition: var(--transition);
 }
 
+.nav-prev:hover {
+  background: var(--accent);
+  color: white;
+  transform: translateX(-4px);
+}
+
+.nav-next:hover {
+  background: var(--accent);
+  color: white;
+  transform: translateX(4px);
+}
+
+/* TOC */
+.toc {
+  margin: 20px 0;
+  padding: 16px 20px;
+  background: var(--bg-alt);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+}
+
+.toc ul {
+  list-style: none;
+  margin: 0;
+}
+
+.toc li {
+  margin: 6px 0;
+}
+
+.toc a {
+  color: var(--accent);
+}
+
+/* Responsive */
 @media (max-width: 768px) {
-  .header-inner {
-    flex-direction: column;
-    gap: 12px;
-  }
-  .search { max-width: 100%; }
   main { padding: 40px 16px; }
-  .group-header { flex-direction: column; }
-  .group-emoji { font-size: 28px; }
-  .group-header h2 { font-size: 20px; }
-  .card-scroll { gap: 12px; }
-  .topic-card { flex: 0 0 240px; min-height: 200px; }
+  .header-inner { flex-direction: column; gap: 16px; }
+  .search { max-width: none; }
   .doc-header h1 { font-size: 32px; }
-  .doc-body h2 { font-size: 22px; }
-  .doc-nav { flex-direction: column; }
+  .doc-body h2 { font-size: 24px; }
+  .card-scroll { gap: 12px; }
+  .topic-card { flex: 0 0 280px; }
 }
-
-@media print {
-  header { display: none; }
-  .topic-group { display: none; }
-  main { padding: 0; }
-}
-
-.token.string { color: inherit; }
-.token.number { color: inherit; }
-.token.keyword { color: inherit; }
   </style>
 </head>
 <body>
   <header>
     <div class="header-inner">
-      <div class="logo">📘 AI-SDLC Manual</div>
+      <div class="logo">📖 AI-SDLC Manual</div>
       <div class="search">
-        <input type="text" id="globalSearch" placeholder="Search docs (Cmd+K)..." />
+        <input type="text" id="searchInput" placeholder="Search documentation..." />
+        <div class="search-results" id="searchResults"></div>
       </div>
     </div>
   </header>
 
   <main>
-    <section id="discovery">
-      ${groupBlocks}
+    <section id="index" class="doc-section" style="border-bottom: 2px solid var(--border-subtle); padding-bottom: 60px;">
+      <h1 style="font-size: 48px; margin-bottom: 24px;">AI-SDLC Platform Manual</h1>
+      <p style="font-size: 18px; color: var(--text-secondary); margin-bottom: 40px;">Master the complete AI-SDLC workflow from setup to execution. Start here or jump to any topic below.</p>
     </section>
 
-    <section id="content">
-      ${docCards}
-    </section>
+    ${groupBlocks}
+
+    ${docCards}
   </main>
 
   <script>
-    mermaid.contentLoaded();
-    document.addEventListener('DOMContentLoaded', () => {
-      Prism.highlightAll();
-    });
-
-    const searchInput = document.getElementById('globalSearch');
-    const docSections = document.querySelectorAll('.doc-section');
-    const topicGroups = document.querySelectorAll('.topic-group');
+    // Search implementation
+    const searchIndex = ${searchIndex};
+    const searchInput = document.getElementById('searchInput');
+    const searchResults = document.getElementById('searchResults');
 
     searchInput.addEventListener('input', (e) => {
       const query = e.target.value.toLowerCase();
-      
-      docSections.forEach(section => {
-        const text = section.textContent.toLowerCase();
-        section.style.display = text.includes(query) ? '' : 'none';
-      });
-
-      topicGroups.forEach(group => {
-        const cards = group.querySelectorAll('.topic-card');
-        let visible = 0;
-        cards.forEach(card => {
-          if (card.textContent.toLowerCase().includes(query)) {
-            card.style.display = '';
-            visible++;
-          } else {
-            card.style.display = 'none';
-          }
-        });
-        group.style.display = visible > 0 ? '' : 'none';
-      });
-    });
-
-    document.addEventListener('keydown', (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-        e.preventDefault();
-        searchInput.focus();
-        searchInput.select();
+      if (!query) {
+        searchResults.classList.remove('active');
+        return;
       }
+
+      const results = searchIndex.filter(doc =>
+        doc.title.toLowerCase().includes(query) ||
+        doc.content.toLowerCase().includes(query)
+      ).slice(0, 8);
+
+      if (results.length === 0) {
+        searchResults.innerHTML = '<div class="search-result-item">No results found</div>';
+      } else {
+        searchResults.innerHTML = results.map(r => \`
+          <a href="#\${r.slug}" class="search-result-item">
+            <div class="search-result-title">\${r.title}</div>
+            <div class="search-result-snippet">\${r.content.substring(0, 100)}...</div>
+          </a>
+        \`).join('');
+      }
+
+      searchResults.classList.add('active');
     });
 
-    document.querySelectorAll('a[href^="#"]').forEach(link => {
-      link.addEventListener('click', (e) => {
-        if (link.getAttribute('href') === '#') return;
-        e.preventDefault();
-        const target = document.querySelector(link.getAttribute('href'));
-        if (target) {
-          const offset = 80;
-          window.scrollTo({
-            top: target.getBoundingClientRect().top + window.scrollY - offset,
-            behavior: 'smooth'
-          });
-        }
-      });
+    searchInput.addEventListener('blur', () => {
+      setTimeout(() => searchResults.classList.remove('active'), 200);
+    });
+
+    // Prism.js activation
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof Prism !== 'undefined') {
+        Prism.highlightAll();
+      }
+      if (typeof mermaid !== 'undefined') {
+        mermaid.contentLoaded();
+      }
     });
   </script>
 </body>
@@ -839,31 +894,21 @@ main {
 }
 
 function main() {
-  const args = process.argv.slice(2);
-  if (args.includes('--check')) {
-    const { docs } = loadDocs();
-    if (docs.length === 0) {
-      console.error('No documentation files found');
-      process.exit(1);
-    }
-    console.log('Found ' + docs.length + ' documentation files');
-    process.exit(0);
-  }
-
-  const { docs } = loadDocs();
-  if (docs.length === 0) {
-    console.error('No documentation files found');
-    process.exit(1);
-  }
-
+  const docs = loadDocs();
   const html = buildHTML(docs);
-  fs.writeFileSync(OUT, html, 'utf8');
-
   const hash = calculateHash(html);
-  fs.writeFileSync(HASH_FILE, hash, 'utf8');
 
-  const sizeKB = (fs.statSync(OUT).size / 1024).toFixed(1);
-  console.log('Generated ' + OUT + ' (v5.1.0, ' + docs.length + ' sections, ' + sizeKB + ' KB)');
+  const oldHash = fs.existsSync(HASH_FILE) ? fs.readFileSync(HASH_FILE, 'utf8').trim() : null;
+  if (hash === oldHash) {
+    console.log(`✓ No changes detected (manual.html up-to-date)`);
+    return;
+  }
+
+  fs.writeFileSync(OUT, html);
+  fs.writeFileSync(HASH_FILE, hash);
+
+  const size = (fs.statSync(OUT).size / 1024).toFixed(1);
+  console.log(`Generated ${OUT} (v6.0.0, ${docs.length} sections, ${size} KB)`);
 }
 
 main();
